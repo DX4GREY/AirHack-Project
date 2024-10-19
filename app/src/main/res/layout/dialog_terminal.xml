@@ -1,0 +1,28 @@
+<!-- res/layout/dialog_terminal.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/terminal_output"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/border_terminal"
+        android:gravity="start"
+        android:padding="10dp"
+        android:scrollbars="vertical"
+        android:textColor="#388E3C"
+        android:textSize="10dp"
+        android:typeface="monospace"
+        android:textIsSelectable="true"
+        tools:ignore="TextSizeCheck" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/frag_close"
+        android:visibility="gone"
+        android:text="@android:string/ok"/>
+</LinearLayout>

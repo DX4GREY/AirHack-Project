@@ -1,0 +1,39 @@
+#!/data/data/com.dxablack.airhack/files/bin/bash
+# Version: 1.0.2
+
+# export path for android bins/tools
+
+SU1=$(which su)
+SU2="$SU1 -c "
+
+# clear out old view
+clear
+
+# unset things and readd chroot things
+unset PATH
+unset TMP
+unset TMPDIR
+unset HOME
+unset LD_PRELOAD
+unset LD_LIBRARY_PATH
+
+## Combine android $PATH to kali chroot $PATH
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export TERM=xterm-256color
+export LANG=en_US.UTF-8
+export HOME=/root
+export TMP=/tmp
+export TMPDIR=/tmp
+export USER=root
+export MAIL=/var/mail/root
+export LOGNAME=root
+export SHLVL=1
+# Lets pass a binky export here too ;)
+export YOU_KNOW_WHAT=THIS_IS_KALI_LINUX_NETHUNTER_FROM_JAVA_BINKY
+
+# Gabungkan semua argumen yang diterima menjadi satu string
+CMD="$@"
+
+# Jalankan perintah di chroot
+$SU2 "/system/bin/chroot $@ROOTFS_PATH@$ /bin/su -c \"$CMD\""
+

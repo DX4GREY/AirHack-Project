@@ -1,0 +1,10 @@
+<!-- res/drawable/border.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Adding stroke (border) -->
+    <stroke
+        android:width="1dp"
+        android:color="@android:color/darker_gray"/>  <!-- Color of the border -->
+
+    <!-- Optional: Adding corner radius -->
+    <corners android:radius="5dp" />  <!-- Rounded corners -->
+</shape>

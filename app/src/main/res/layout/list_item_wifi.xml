@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/list_item_wifi.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_ap"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/ripple_effect"
+    android:padding="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/ssidTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SSID"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/signalTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Signal Strength" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/bssidTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BSSID" />
+
+
+        <TextView
+            android:id="@+id/frequencyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Frequency" />
+    </LinearLayout>
+</LinearLayout>

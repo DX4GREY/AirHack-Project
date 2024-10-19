@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+    <!-- Ikon Aplikasi -->
+    <ImageView
+        android:id="@+id/splash_icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/app_name" />
+
+    <!-- Nama Aplikasi -->
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name_full"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:layout_below="@id/splash_icon"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="10dp" />
+
+    <!-- Deskripsi Aplikasi -->
+    <TextView
+        android:id="@+id/app_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Advanced WiFi Attack Toolkit"
+        android:textSize="12sp"
+        android:layout_below="@id/app_name"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="5dp" />
+</RelativeLayout>
