@@ -8,6 +8,7 @@ Transform your Android device into a powerful network testing tool with **AirHac
   - De-authentication
   - Flooding
   - Beacon frame spamming
+  - And more attack...
 - User-friendly design accessible for both beginners and advanced users.
 - Portable and convenient: no need for a laptop or desktop.
 - Customizable settings for your network testing needs.
