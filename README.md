@@ -25,7 +25,6 @@ AirHack is ideal for:
 - Enthusiasts who need network security testing on the go
 
 ## Screenshots:
-_See Screenshots_
 
 > **Note:** This app is for educational and ethical purposes only. Make sure you have proper authorization before testing any networks.
 
