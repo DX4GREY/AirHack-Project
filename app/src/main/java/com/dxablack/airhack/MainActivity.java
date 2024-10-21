@@ -121,15 +121,16 @@ public class MainActivity extends DxaActivity {
         goScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ifList.contains("wlan0") && !wifiInterface.contains("wlan0")){
+                String intfS = getInterfaceSuggestions();
+                if (ifList.contains(intfS) && !wifiInterface.contains(intfS)){
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("Interface suggestions")
-                            .setMessage("Use \"wlan0\" for scanning experience?")
+                            .setMessage("Use \"" + intfS + "\" for scanning experience?")
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-                                    intent.putExtra("interface","wlan0");
+                                    intent.putExtra("interface",intfS);
                                     startActivity(intent);
                                 }
                             })
@@ -273,7 +274,32 @@ public class MainActivity extends DxaActivity {
         }
     }
 
+    private String getInterfaceSuggestions() {
+        String tmp = "";  // Default interface
+        ShellExecutor shellExecutor = new ShellExecutor(false);
 
+        for (String iface : ifList) {
+            iface = iface.replaceAll("\n", "").replaceAll("\\s+", "");  // Hapus spasi dan karakter newline
+            String cmd = "iw " + iface + " info";
+            Log.d("main", "getInterfaceSuggestions: " + cmd);
+
+            // Jalankan perintah di shell
+            shellExecutor.startProcessAsRoot(cmd);
+
+            // Ambil output setelah proses selesai
+            String output = shellExecutor.getLastOutput();
+            Log.d("main", "Shell output: " + output);
+
+            // Cek kondisi: bukan p2p, mengandung angka 0, dan hanya phy 0
+            if (iface.contains("0") && !iface.contains("p2p") && output.contains("phy 0")) {
+                tmp = iface;  // Ganti interface sementara dengan yang sesuai
+                Log.d("main", "getInterfaceSuggestions: Successfully add " + tmp);
+                break;  // Berhenti setelah menemukan interface phy 0 di index pertama
+            }
+        }
+
+        return tmp.replaceAll("\\s+", "");  // Hapus spasi ekstra jika ada
+    }
 
     private void addParamEditText(int paramId, String labelText, String helpText, String paramCommand, String examples){
         TextView label = new TextView(MainActivity.this);
