@@ -121,9 +121,32 @@ public class MainActivity extends DxaActivity {
         goScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-                intent.putExtra("interface",wifiInterface);
-                startActivity(intent);
+                if (ifList.contains("wlan0")){
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Interface suggestions")
+                            .setMessage("Use \"wlan0\" for scanning experience?")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+                                    intent.putExtra("interface","wlan0");
+                                    startActivity(intent);
+                                }
+                            })
+                            .setNeutralButton("USE SELECTED INTERFACE", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+                                    intent.putExtra("interface",wifiInterface);
+                                    startActivity(intent);
+                                }
+                            })
+                            .show(); // Tampilkan dialog
+                }else{
+                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+                    intent.putExtra("interface",wifiInterface);
+                    startActivity(intent);
+                }
             }
         });
         shell.setOutputListener(new ShellExecutor.OutputListener(){
