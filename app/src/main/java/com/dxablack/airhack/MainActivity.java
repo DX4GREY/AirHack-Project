@@ -121,7 +121,7 @@ public class MainActivity extends DxaActivity {
         goScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ifList.contains("wlan0")){
+                if (ifList.contains("wlan0") && !wifiInterface.contains("wlan0")){
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("Interface suggestions")
                             .setMessage("Use \"wlan0\" for scanning experience?")
