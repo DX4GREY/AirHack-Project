@@ -14,8 +14,14 @@ public class ShellExecutor {
     private StringBuilder output;
     private OutputListener listener;
     private int code;
+    private boolean dbg = false;
 
     public ShellExecutor() {
+        output = new StringBuilder();
+    }
+
+    public ShellExecutor(boolean debug){
+        dbg = debug;
         output = new StringBuilder();
     }
 
@@ -43,7 +49,7 @@ public class ShellExecutor {
             output.setLength(0);  // Reset output
 
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                if (dbg) System.out.println(line);
                 output.append(line).append("\n");
 
                 // Panggil listener ketika ada output baru
@@ -81,7 +87,7 @@ public class ShellExecutor {
             output.setLength(0);  // Reset output
 
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                if (dbg) System.out.println(line);
                 output.append(line).append("\n");
 
                 // Panggil listener ketika ada output baru
