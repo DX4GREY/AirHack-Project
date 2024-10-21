@@ -7,9 +7,9 @@ public class InterfaceManager {
     private static KaliShellExecutor shell;
     public static boolean checkMonitor(Context context, String interfaceName){
         shell = new KaliShellExecutor(context);
-        if (shell.runKaliRoot("iwconfig " + interfaceName)) {
+        if (shell.runKaliRoot("iw " + interfaceName + " info")) {
             String output = shell.getLastOutput();  // Pemanggilan getLastOutput seharusnya bekerja
-            if (output != null && output.contains("Monitor")) {
+            if (output != null && output.contains("monitor")) {
                 return true;
             }
         }
