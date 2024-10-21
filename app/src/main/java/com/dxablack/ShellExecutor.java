@@ -40,7 +40,7 @@ public class ShellExecutor {
     // Menjalankan proses shell normal
     public boolean startProcess(String command) {
         try {
-            ProcessBuilder builder = new ProcessBuilder("sh", "-c", command);
+            ProcessBuilder builder = new ProcessBuilder("sh", "-c", "\"" + command + "\"");
             builder.redirectErrorStream(true);  // Menggabungkan error dengan output
             process = builder.start();
 
