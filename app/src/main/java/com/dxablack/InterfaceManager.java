@@ -43,9 +43,8 @@ public class InterfaceManager {
             return new String[]{};
         }
     }
-    public static boolean fixInterface(Context context, String intface){
-        shell = new KaliShellExecutor(context);
-        return shell.runKaliRoot("ifconfig " + intface + " up");
+    public static boolean fixInterface(KaliShellExecutor shellExecutor, String intface){
+        return shellExecutor.runKaliRoot("ifconfig " + intface + " up");
     }
 
     private static String transformText(String input) {
