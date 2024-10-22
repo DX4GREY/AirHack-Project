@@ -40,6 +40,12 @@
                 android:gravity="center"
                 android:text="@string/app_info"/>
         </LinearLayout>
+        <Button
+            android:id="@+id/fix_inteface"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fix Interface"
+            android:textStyle="bold"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -61,6 +67,12 @@
                 android:layout_height="match_parent"/>
         </LinearLayout>
     </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:indeterminate="true"
+        android:layout_gravity="bottom"
+        style="?android:progressBarStyleHorizontal"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/scan_button"
         android:layout_width="wrap_content"
