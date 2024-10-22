@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.dxablack.DxaActivity;
 
+import com.dxablack.InterfaceManager;
+import com.dxablack.KaliShellExecutor;
 import com.dxablack.ShellExecutor;
 import com.dxablack.TickLoop;
 import com.dxablack.airhack.databinding.ActivityScannerBinding;
@@ -26,7 +28,7 @@ public class ScannerActivity extends DxaActivity {
 
     private ActivityScannerBinding binding;
     private TickLoop tickLoop;
-    private ShellExecutor shellExecutor;
+    private KaliShellExecutor shellExecutor;
     private FloatingActionButton fab;
     private ListView listView;
     private String wifiInterface;
@@ -43,7 +45,7 @@ public class ScannerActivity extends DxaActivity {
         fab = binding.scanButton;
         listView = binding.listAp;
         binding.interfaceView.setText(wifiInterface);
-        shellExecutor = new ShellExecutor();
+        shellExecutor = new KaliShellExecutor(getApplicationContext());
         shellExecutor.setOutputListener(new ShellExecutor.OutputListener() {
             @Override
             public void onNewOutput(String outputLine) {
@@ -103,6 +105,12 @@ public class ScannerActivity extends DxaActivity {
                 startScan();
             }
         });
+        binding.fixInteface.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InterfaceManager.fixInterface(shellExecutor, wifiInterface);
+            }
+        });
     }
     private void startScan(){
         shellExecutor.startProcessAsRootAsync("iw " + wifiInterface + " scan");
@@ -113,8 +121,12 @@ public class ScannerActivity extends DxaActivity {
             @Override
             public void onTick() {
                 if (shellExecutor.isProcessRunning()) {
+                    binding.fixInteface.setEnabled(false);
+                    binding.progressBar.setVisibility(View.VISIBLE);
                     fab.setImageResource(android.R.drawable.ic_media_pause);
                 } else {
+                    binding.fixInteface.setEnabled(true);
+                    binding.progressBar.setVisibility(View.GONE);
                     fab.setImageResource(android.R.drawable.ic_media_play);
                 }
                 if (listView.getAdapter() != null){
