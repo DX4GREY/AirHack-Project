@@ -43,12 +43,13 @@ public class InterfaceManager {
             return new String[]{};
         }
     }
-    public static void fixInterface(Context context, String intface){
+    public static boolean fixInterface(Context context, String intface){
         shell = new KaliShellExecutor(context);
         if (checkMonitor(context.getApplicationContext(), intface)){
             if (shell.runKaliRoot("airmon-ng start " + intface)){
                 if (shell.runKaliRoot("airmon-ng stop " + intface)){
                     System.out.println("Success fix interface: " + intface);
+                    return true;
                 }else{
                     System.out.println("Failed fix interface: " + intface);
                 }
@@ -58,6 +59,7 @@ public class InterfaceManager {
         }else{
             System.out.println("No interface detected: " + intface);
         }
+        return false;
     }
 
     private static String transformText(String input) {
