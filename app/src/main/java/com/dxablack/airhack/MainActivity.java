@@ -41,6 +41,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.internal.TextScale;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends DxaActivity {
 
@@ -207,17 +208,24 @@ public class MainActivity extends DxaActivity {
     }
 
     private void refreshListInterface(){
-        String[] itemList = InterfaceManager.getListInterface(MainActivity.this);
-        ifList = new ArrayList<>();
-        for (int i = 0; i < itemList.length; i++) {
-            ifList.add(itemList[i]);
-        }
-        // Membuat adapter untuk Spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ifList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<HashMap<String, Object>> itemList = InterfaceManager.getListInterface(MainActivity.this);
+                ifList = new ArrayList<>();
+                ArrayList<String> adapterList = new ArrayList<>();
+                for (int i = 0; i < itemList.size(); i++) {
+                    ifList.add((String) itemList.get(i).get("interface"));
+                    adapterList.add(itemList.get(i).get("interface") + " : " + itemList.get(i).get("driver"));
+                }
+                // Membuat adapter untuk Spinner
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, adapterList);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Menambahkan adapter ke Spinner
-        linterface.setAdapter(adapter);
+                // Menambahkan adapter ke Spinner
+                linterface.setAdapter(adapter);
+            }
+        });
     }
 
     private void addAttackModes() {
