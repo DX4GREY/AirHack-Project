@@ -81,7 +81,7 @@ public class SplashActivity extends DxaActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    showTerminalDialog("apt install mdk4 -y");
+                                    showTerminalDialog("apt update && apt install mdk4 -y");
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
