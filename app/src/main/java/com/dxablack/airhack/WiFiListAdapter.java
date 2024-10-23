@@ -67,7 +67,7 @@ public class WiFiListAdapter extends BaseAdapter {
         ssidTextView.setText(wifiInfo.get("SSID"));
         bssidTextView.setText(wifiInfo.get("BSSID"));
         signalTextView.setText(" (" + wifiInfo.get("Signal") + ")");
-        frequencyTextView.setText(" (" + wifiInfo.get("Frequency") + "Ghz)");
+        frequencyTextView.setText(" (" + wifiInfo.get("Frequency") + "Mhz)");
 
         item.setOnClickListener(new View.OnClickListener() {
             @Override
