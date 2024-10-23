@@ -95,7 +95,7 @@ public class ScannerActivity extends DxaActivity {
 
         tick();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng stop " + wifiInterface, ScannerActivity.this);
+        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng stop " + wifiInterface + "; ifconfig " + wifiInterface + " up", ScannerActivity.this);
         terminalDialog.show(fragmentManager, "TerminalDialogFragment");
         terminalDialog.setCancelable(false);
         terminalDialog.setAutoClose(true);
