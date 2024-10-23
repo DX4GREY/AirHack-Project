@@ -212,18 +212,20 @@ public class MainActivity extends DxaActivity {
             @Override
             public void run() {
                 ArrayList<HashMap<String, Object>> itemList = InterfaceManager.getListInterface(MainActivity.this);
-                ifList = new ArrayList<>();
-                ArrayList<String> adapterList = new ArrayList<>();
-                for (int i = 0; i < itemList.size(); i++) {
-                    ifList.add((String) itemList.get(i).get("interface"));
-                    adapterList.add(itemList.get(i).get("interface") + " : " + itemList.get(i).get("driver"));
-                }
-                // Membuat adapter untuk Spinner
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, adapterList);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                if (itemList != null || !itemList.isEmpty()){
+                    ifList = new ArrayList<>();
+                    ArrayList<String> adapterList = new ArrayList<>();
+                    for (int i = 0; i < itemList.size(); i++) {
+                        ifList.add((String) itemList.get(i).get("interface"));
+                        adapterList.add(itemList.get(i).get("interface") + " : " + itemList.get(i).get("driver"));
+                    }
+                    // Membuat adapter untuk Spinner
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, adapterList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                // Menambahkan adapter ke Spinner
-                linterface.setAdapter(adapter);
+                    // Menambahkan adapter ke Spinner
+                    linterface.setAdapter(adapter);
+                }
             }
         });
     }
