@@ -3,6 +3,9 @@ package com.dxablack;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class InterfaceManager {
     private static KaliShellExecutor shell;
     public static boolean checkMonitor(Context context, String interfaceName){
@@ -25,9 +28,10 @@ public class InterfaceManager {
         }
         return false;
     }
-    public static String[] getListInterface(Context context) {
+    public static ArrayList<HashMap<String, Object>> getListInterface(Context context) {
         shell = new KaliShellExecutor(context);
-
+        ArrayList<HashMap<String, Object>> tmpList = new ArrayList<>();
+        String[] tmpArr;
         // Jalankan perintah dan pastikan berhasil
         boolean success = shell.runKaliRoot("airmon-ng");
 
@@ -36,12 +40,22 @@ public class InterfaceManager {
             String text = transformText(shell.getLastOutput());
             String[] options = text.replaceAll("Interface,", "").split(",");
             Log.d("Root", "getListInterface: " + text);
-            return options;
+            tmpArr = options;
         } else {
             // Jika gagal menjalankan perintah
             Log.e("Root", "Failed to run airmon-ng");
-            return new String[]{};
+            tmpArr = new String[]{};
         }
+        if (tmpArr != null){
+            for (String item: tmpArr) {
+                shell.runKaliRoot("ethtool -i " + item + " | grep driver | awk '{print $2}'");
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("interface", item);
+                map.put("driver", shell.getLastOutput().replaceAll("\n", "").replaceAll("\\s+", ""));
+                tmpList.add(map);
+            }
+        }
+        return tmpList;
     }
     public static void fixInterface(KaliShellExecutor shellExecutor, String intface){
         shellExecutor.runKaliRootAsync("ifconfig " + intface + " up");
