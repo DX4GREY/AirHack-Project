@@ -122,33 +122,9 @@ public class MainActivity extends DxaActivity {
         goScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String intfS = getInterfaceSuggestions();
-                if (ifList.contains(intfS) && !wifiInterface.contains(intfS)){
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Interface suggestions")
-                            .setMessage("Use \"" + intfS + "\" for scanning experience?")
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-                                    intent.putExtra("interface",intfS);
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNeutralButton("USE SELECTED INTERFACE", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-                                    intent.putExtra("interface",wifiInterface);
-                                    startActivity(intent);
-                                }
-                            })
-                            .show(); // Tampilkan dialog
-                }else{
-                    Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-                    intent.putExtra("interface",wifiInterface);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
+                intent.putExtra("interface", wifiInterface);
+                startActivity(intent);
             }
         });
         shell.setOutputListener(new ShellExecutor.OutputListener(){
