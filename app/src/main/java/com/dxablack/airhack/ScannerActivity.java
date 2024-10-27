@@ -102,6 +102,7 @@ public class ScannerActivity extends DxaActivity {
         terminalDialog.setOnCloseClickedListener(new TerminalDialogFragment.OnCloseClickedListener() {
             @Override
             public void onClick(View view, int code) {
+                wifiInterface = wifiInterface.replace("mon", "");
                 startScan();
             }
         });
