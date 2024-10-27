@@ -403,11 +403,15 @@ public class MainActivity extends DxaActivity {
                         terminalDialog.setOnCloseClickedListener(new TerminalDialogFragment.OnCloseClickedListener() {
                             @Override
                             public void onClick(View view, int code) {
-                                Toast.makeText(MainActivity.this, InterfaceManager.checkMonitor(getApplicationContext(), wifiInterface) ?
+                                boolean isMonitor = InterfaceManager.checkMonitor(getApplicationContext(), wifiInterface);
+                                Toast.makeText(MainActivity.this, isMonitor ?
                                         "Success changed " +  wifiInterface + " to monitor!" : "Failed changed " +  wifiInterface + " to monitor!", Toast.LENGTH_SHORT).show();
                                 int intf = linterface.getSelectedItemPosition();
                                 refreshListInterface();
                                 linterface.setSelection(intf);
+                                if (isMonitor){
+                                    startAttack();
+                                }
                             }
                         });
                         terminalDialog.show(fragmentManager, "TerminalDialogFragment");
