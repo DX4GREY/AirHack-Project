@@ -85,4 +85,22 @@ public class InterfaceManager {
         }
         return result.toString();
     }
+    public static int parseChannelFromFreq(int freq){
+        if (freq >= 2412 && freq <= 2484){
+            return (freq - 2407) / 5;
+        }else if (freq >= 5170 && freq <= 5835){
+            return  (freq - 500) / 5;
+        }else{
+            throw new IllegalArgumentException("Frequency not within WiFi bands");
+        }
+    }
+    public static int parseFrequencyFromChannel(int channel){
+        if (channel >= 1 && channel <= 14){
+            return 2407 + channel * 5;
+        }else if (channel >= 32 && channel <= 177){
+            return 5000 + channel * 5;
+        }else{
+            throw new IllegalArgumentException("Channel not within WiFi bands");
+        }
+    }
 }
