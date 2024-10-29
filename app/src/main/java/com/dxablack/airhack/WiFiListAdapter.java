@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.dxablack.InterfaceManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -67,7 +69,7 @@ public class WiFiListAdapter extends BaseAdapter {
         ssidTextView.setText(wifiInfo.get("SSID"));
         bssidTextView.setText(wifiInfo.get("BSSID"));
         signalTextView.setText(" (" + wifiInfo.get("Signal") + ")");
-        frequencyTextView.setText(" (" + wifiInfo.get("Frequency") + "Mhz)");
+        frequencyTextView.setText(" | Channel: " + InterfaceManager.parseChannelFromFreq(Integer.parseInt(wifiInfo.get("Frequency"))));
 
         item.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +81,7 @@ public class WiFiListAdapter extends BaseAdapter {
                 menu.add(Menu.NONE, 1, 1, "Copy BSSID");
                 menu.add(Menu.NONE, 2, 2, "Copy SSID");
                 menu.add(Menu.NONE, 3, 3, "Copy Signal");
+                menu.add(Menu.NONE, 4, 4, "Copy Channel");
 
                 // Menambahkan listener untuk menangani klik item
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -93,6 +96,9 @@ public class WiFiListAdapter extends BaseAdapter {
                                 return true;
                             case 3:
                                 copyToClipboard(context, wifiInfo.get("Signal"));
+                                return true;
+                            case 4:
+                                copyToClipboard(context, String.valueOf(InterfaceManager.parseChannelFromFreq(Integer.parseInt(wifiInfo.get("Frequency")))));
                                 return true;
                             default:
                                 return false;
