@@ -27,6 +27,7 @@ public class WiFiListAdapter extends BaseAdapter {
     private ArrayList<HashMap<String, String>> wifiList;
     private LayoutInflater inflater;
 
+    // Array is include SSID, BSSID, Frequency, and Signal
     public WiFiListAdapter(Context context, ArrayList<HashMap<String, String>> wifiList) {
         this.context = context;
         this.wifiList = wifiList;
