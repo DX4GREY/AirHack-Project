@@ -68,17 +68,6 @@ public class DxaActivity extends AppCompatActivity {
             writer.write(content);
         }
     }
-    public int channelToFrequency(int channel) {
-        if (channel >= 1 && channel <= 14) {  // Pita 2.4 GHz
-            return 2407 + channel * 5;
-        } else if (channel >= 32 && channel <= 177) {  // Pita 5 GHz
-            return 5000 + channel * 5;
-        } else if (channel == 0) {
-            return 0;
-        }else{
-            throw new IllegalArgumentException("Nomor kanal tidak valid: " + channel);
-        }
-    }
     public static boolean writeDataToFile(List<HashMap<String, String>> data, String filePath) {
         String TAG = "FileHelper";
         Gson gson = new Gson();
