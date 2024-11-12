@@ -15,6 +15,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <include layout="@layout/title_airhack"/>
+        <Switch
+            android:id="@+id/use_airodump"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:text="Using airodump-ng for scanning" />
         <Button
             android:id="@+id/fix_inteface"
             android:layout_width="match_parent"
