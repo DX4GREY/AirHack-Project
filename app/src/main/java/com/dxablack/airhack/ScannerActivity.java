@@ -35,6 +35,8 @@ public class ScannerActivity extends DxaActivity {
     private ListView listView;
     private String wifiInterface;
     private Switch airodumpSwitch;
+
+    private TickLoop airodumpTickLoop;
     private boolean isAirodumpScan = false;
 
     @Override
@@ -70,12 +72,17 @@ public class ScannerActivity extends DxaActivity {
         });
 
         tickLoop = new TickLoop(100);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NewApi")
             @Override
             public void onClick(View view) {
                 if (shellExecutor.isProcessRunning()) {
                     shellExecutor.stopProcess();
+                    if (airodumpSwitch.isChecked()){
+                        isAirodumpScan = false;
+                        new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("rm -rf " + AttackFunction.csvPathAirodump());
+                    }
                 } else {
                     new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("mkdir -p " + AttackFunction.csvPathAirodump());
                     if (!airodumpSwitch.isChecked())
@@ -84,6 +91,7 @@ public class ScannerActivity extends DxaActivity {
                         shellExecutor.runKaliRootAsync("airodump-ng --output-format csv -w " +
                                 AttackFunction.csvPathAirodump() + "/csv" + " " +
                                 wifiInterface);
+                        isAirodumpScan = true;
                     }
                 }
             }
@@ -120,11 +128,13 @@ public class ScannerActivity extends DxaActivity {
                 // Menjalankan perintah untuk membaca file CSV jika ada
                 if (csvRawReader.runKaliRoot("cat " + AttackFunction.csvPathAirodump() + "/*.csv")) {
                     CSVManagerAP csvManagerAP = new CSVManagerAP();
+                    if (TextUtils.isEmpty(removeFirstLine(csvRawReader.getLastOutput()))) return;
                     csvManagerAP.readSectionFromText(removeFirstLine(csvRawReader.getLastOutput()));
 
                     ArrayList<HashMap<String, String>> tmpArray = new ArrayList<>();
                     writeDataToFile(csvManagerAP.getData(), "/data/local/scanned.json");
                     for (HashMap<String, String> row : csvManagerAP.getData()) {
+                        boolean isPassToAdd = row.get("BSSID") != null;
                         if (row == null) continue; // Pastikan row tidak null
 
                         HashMap<String, String> tmpData = new HashMap<>();
@@ -132,7 +142,7 @@ public class ScannerActivity extends DxaActivity {
                         // Cek null untuk setiap entri pada row sebelum mengakses
                         String essid = row.get("ESSID") != null ? row.get("ESSID") : "Unknown";
                         String bssid = row.get("BSSID") != null ? row.get("BSSID") : "Unknown";
-                        String power = row.get("Power") != null ? row.get("Power") : "N/A";
+                        String power = row.get("Power") != null ? row.get("Power") + " dBm" : "N/A";
                         String channelStr = row.get("channel");
 
                         // Konversi channel ke frekuensi, cek null dan format
@@ -151,7 +161,7 @@ public class ScannerActivity extends DxaActivity {
                         tmpData.put("Signal", power);
                         tmpData.put("Frequency", frequency != -1 ? String.valueOf(frequency) : "0");
 
-                        tmpArray.add(tmpData);
+                        if (isPassToAdd) tmpArray.add(tmpData);
                     }
 
                     // Pastikan pembaruan UI dilakukan di thread utama
@@ -182,7 +192,6 @@ public class ScannerActivity extends DxaActivity {
                 });
             }
         }
-        new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("rm -rf " + AttackFunction.csvPathAirodump());
     }
     private void startScan(){
         shellExecutor.startProcessAsRootAsync("iw " + wifiInterface + " scan");
@@ -192,6 +201,9 @@ public class ScannerActivity extends DxaActivity {
             @SuppressLint("NewApi")
             @Override
             public void onTick() {
+                if (isAirodumpScan){
+                    refresh();
+                }
                 if (shellExecutor.isProcessRunning()) {
                     binding.fixInteface.setEnabled(false);
                     airodumpSwitch.setEnabled(false);
