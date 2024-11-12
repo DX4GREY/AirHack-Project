@@ -7,9 +7,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.dxablack.AttackFunction;
 import com.dxablack.DxaActivity;
 
 import com.dxablack.InterfaceManager;
@@ -32,6 +34,8 @@ public class ScannerActivity extends DxaActivity {
     private FloatingActionButton fab;
     private ListView listView;
     private String wifiInterface;
+    private Switch airodumpSwitch;
+    private boolean isAirodumpScan = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,7 @@ public class ScannerActivity extends DxaActivity {
 
         fab = binding.scanButton;
         listView = binding.listAp;
+        airodumpSwitch = binding.useAirodump;
         binding.interfaceView.setText(wifiInterface);
         shellExecutor = new KaliShellExecutor(getApplicationContext());
         shellExecutor.setOutputListener(new ShellExecutor.OutputListener() {
@@ -55,28 +60,12 @@ public class ScannerActivity extends DxaActivity {
             @Override
             public void onError(String errorLine) {
                 Log.e("Scanner", "onError: " + errorLine);
+                refresh();
             }
 
             @Override
             public void onCommandFinished() {
-                if (!TextUtils.isEmpty(shellExecutor.getLastOutput()) && !shellExecutor.getLastOutput().contains("Network is down")) {
-                    ArrayList<HashMap<String, String>> list = parseWiFiScanOutput(shellExecutor.getLastOutput());
-                    Log.d("Scanner", "onCommandFinished: " + shellExecutor.getLastOutput());
-                    for (int i = 0; i < list.size(); i++) {
-                        if (TextUtils.isEmpty(list.get(i).get("SSID"))){
-                            list.remove(i);
-                        }
-
-                    }
-                    // Pastikan pembaruan UI dilakukan di thread utama
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, list);
-                            listView.setAdapter(adapter);
-                        }
-                    });
-                }
+                refresh();
             }
         });
 
@@ -88,14 +77,23 @@ public class ScannerActivity extends DxaActivity {
                 if (shellExecutor.isProcessRunning()) {
                     shellExecutor.stopProcess();
                 } else {
-                    startScan();
+                    new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("mkdir -p " + AttackFunction.csvPathAirodump());
+                    if (!airodumpSwitch.isChecked())
+                        startScan();
+                    else {
+                        shellExecutor.runKaliRootAsync("airodump-ng --output-format csv -w " +
+                                AttackFunction.csvPathAirodump() + "/csv" + " " +
+                                wifiInterface);
+                    }
                 }
             }
         });
 
         tick();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng stop " + wifiInterface + "; ifconfig " + wifiInterface + " up", ScannerActivity.this);
+        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng stop " + wifiInterface +
+                        "; ifconfig " + wifiInterface + " up",
+                ScannerActivity.this);
         terminalDialog.show(fragmentManager, "TerminalDialogFragment");
         terminalDialog.setCancelable(false);
         terminalDialog.setAutoClose(true);
@@ -113,6 +111,79 @@ public class ScannerActivity extends DxaActivity {
             }
         });
     }
+    private void refresh(){
+        if (!TextUtils.isEmpty(shellExecutor.getLastOutput()) && !shellExecutor.getLastOutput().contains("Network is down")) {
+            if (airodumpSwitch.isChecked()) {
+                ArrayList<HashMap<String, String>> scannerList = new ArrayList<>();
+                KaliShellExecutor csvRawReader = new KaliShellExecutor(getApplicationContext());
+
+                // Menjalankan perintah untuk membaca file CSV jika ada
+                if (csvRawReader.runKaliRoot("cat " + AttackFunction.csvPathAirodump() + "/*.csv")) {
+                    CSVManagerAP csvManagerAP = new CSVManagerAP();
+                    csvManagerAP.readSectionFromText(removeFirstLine(csvRawReader.getLastOutput()));
+
+                    ArrayList<HashMap<String, String>> tmpArray = new ArrayList<>();
+                    writeDataToFile(csvManagerAP.getData(), "/data/local/scanned.json");
+                    for (HashMap<String, String> row : csvManagerAP.getData()) {
+                        if (row == null) continue; // Pastikan row tidak null
+
+                        HashMap<String, String> tmpData = new HashMap<>();
+
+                        // Cek null untuk setiap entri pada row sebelum mengakses
+                        String essid = row.get("ESSID") != null ? row.get("ESSID") : "Unknown";
+                        String bssid = row.get("BSSID") != null ? row.get("BSSID") : "Unknown";
+                        String power = row.get("Power") != null ? row.get("Power") : "N/A";
+                        String channelStr = row.get("channel");
+
+                        // Konversi channel ke frekuensi, cek null dan format
+                        int frequency = -1;
+                        if (channelStr != null) {
+                            try {
+                                int channel = Integer.parseInt(channelStr.trim());
+                                frequency = channelToFrequency(channel);
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace(); // Log jika format channel salah
+                            }
+                        }
+
+                        tmpData.put("SSID", essid);
+                        tmpData.put("BSSID", bssid);
+                        tmpData.put("Signal", power);
+                        tmpData.put("Frequency", frequency != -1 ? String.valueOf(frequency) : "0");
+
+                        tmpArray.add(tmpData);
+                    }
+
+                    // Pastikan pembaruan UI dilakukan di thread utama
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, tmpArray);
+                            listView.setAdapter(adapter);
+                        }
+                    });
+                }
+            }else{
+                ArrayList<HashMap<String, String>> list = parseWiFiScanOutput(shellExecutor.getLastOutput());
+                Log.d("Scanner", "onCommandFinished: " + shellExecutor.getLastOutput());
+                for (int i = 0; i < list.size(); i++) {
+                    if (TextUtils.isEmpty(list.get(i).get("SSID"))){
+                        list.remove(i);
+                    }
+
+                }
+                // Pastikan pembaruan UI dilakukan di thread utama
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, list);
+                        listView.setAdapter(adapter);
+                    }
+                });
+            }
+        }
+        new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("rm -rf " + AttackFunction.csvPathAirodump());
+    }
     private void startScan(){
         shellExecutor.startProcessAsRootAsync("iw " + wifiInterface + " scan");
     }
@@ -123,10 +194,12 @@ public class ScannerActivity extends DxaActivity {
             public void onTick() {
                 if (shellExecutor.isProcessRunning()) {
                     binding.fixInteface.setEnabled(false);
+                    airodumpSwitch.setEnabled(false);
                     binding.progressBar.setVisibility(View.VISIBLE);
                     fab.setImageResource(android.R.drawable.ic_media_pause);
                 } else {
                     binding.fixInteface.setEnabled(true);
+                    airodumpSwitch.setEnabled(true);
                     binding.progressBar.setVisibility(View.GONE);
                     fab.setImageResource(android.R.drawable.ic_media_play);
                 }

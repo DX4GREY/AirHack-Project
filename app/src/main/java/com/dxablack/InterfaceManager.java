@@ -90,7 +90,9 @@ public class InterfaceManager {
             return (freq - 2407) / 5;
         }else if (freq >= 5170 && freq <= 5835){
             return  (freq - 500) / 5;
-        }else{
+        }else if (freq == 0) {
+            return 0;
+        }else {
             throw new IllegalArgumentException("Frequency not within WiFi bands");
         }
     }
@@ -99,7 +101,9 @@ public class InterfaceManager {
             return 2407 + channel * 5;
         }else if (channel >= 32 && channel <= 177){
             return 5000 + channel * 5;
-        }else{
+        }else if (channel == 0) {
+            return 0;
+        }else {
             throw new IllegalArgumentException("Channel not within WiFi bands");
         }
     }

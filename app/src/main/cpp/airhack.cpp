@@ -145,3 +145,10 @@ Java_com_dxablack_AttackFunction_attackParameter(JNIEnv *env, jclass clazz) {
 
     return result;
 }
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_dxablack_AttackFunction_csvPathAirodump(JNIEnv *env, jclass clazz) {
+    const char* path = OBFUSCATE("/tmp/airhack-scandump/");
+    return env->NewStringUTF(path);
+}
