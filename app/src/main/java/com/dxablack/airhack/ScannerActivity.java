@@ -133,7 +133,7 @@ public class ScannerActivity extends DxaActivity {
                     ArrayList<HashMap<String, String>> tmpArray = new ArrayList<>();
                     writeDataToFile(csvManagerAP.getData(), "/data/local/scanned.json");
                     for (HashMap<String, String> row : csvManagerAP.getData()) {
-                        boolean isPassToAdd = row.get("BSSID") != null;
+                        boolean isPassToAdd = !TextUtils.isEmpty(row.get("BSSID"));
                         if (row == null) continue; // Pastikan row tidak null
 
                         HashMap<String, String> tmpData = new HashMap<>();
@@ -145,11 +145,12 @@ public class ScannerActivity extends DxaActivity {
                         String channelStr = row.get("channel");
 
                         // Konversi channel ke frekuensi, cek null dan format
-                        int frequency = -1;
+                        int frequency = 0;
+                        Log.d("TAG", "Channel: " + channelStr);
                         if (channelStr != null) {
                             try {
-                                int channel = Integer.parseInt(channelStr.trim());
-                                frequency = channelToFrequency(channel);
+                                int channel = Integer.parseInt(channelStr);
+                                frequency = InterfaceManager.parseFrequencyFromChannel(channel);
                             } catch (NumberFormatException e) {
                                 e.printStackTrace(); // Log jika format channel salah
                             }
@@ -209,7 +210,11 @@ public class ScannerActivity extends DxaActivity {
                     binding.progressBar.setVisibility(View.VISIBLE);
                     fab.setImageResource(android.R.drawable.ic_media_pause);
                 } else {
-                    binding.fixInteface.setEnabled(true);
+                    if (airodumpSwitch.isChecked()){
+                        binding.fixInteface.setEnabled(false);
+                    }else{
+                        binding.fixInteface.setEnabled(true);
+                    }
                     airodumpSwitch.setEnabled(true);
                     binding.progressBar.setVisibility(View.GONE);
                     fab.setImageResource(android.R.drawable.ic_media_play);
