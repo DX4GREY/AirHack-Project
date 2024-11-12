@@ -47,7 +47,7 @@ public class CSVManagerAP {
     }
 
     // Metode untuk membaca bagian BSSID dari teks langsung
-    public void readBssidSectionFromText(String csvText) {
+    public void readSectionFromText(String csvText) {
         String line;
         boolean readingBssidSection = true;
 
@@ -74,7 +74,7 @@ public class CSVManagerAP {
     }
 
     // Getter untuk mengambil data BSSID
-    public List<HashMap<String, String>> getBssidData() {
+    public List<HashMap<String, String>> getData() {
         return bssidData;
     }
 }
