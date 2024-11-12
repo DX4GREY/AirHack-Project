@@ -122,7 +122,6 @@ public class ScannerActivity extends DxaActivity {
     private void refresh(){
         if (!TextUtils.isEmpty(shellExecutor.getLastOutput()) && !shellExecutor.getLastOutput().contains("Network is down")) {
             if (airodumpSwitch.isChecked()) {
-                ArrayList<HashMap<String, String>> scannerList = new ArrayList<>();
                 KaliShellExecutor csvRawReader = new KaliShellExecutor(getApplicationContext());
 
                 // Menjalankan perintah untuk membaca file CSV jika ada

@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="8dp"
-            android:text="Using airodump-ng for scanning" />
+            android:text="Airodump-ng scanner" />
         <Button
             android:id="@+id/fix_inteface"
             android:layout_width="match_parent"
