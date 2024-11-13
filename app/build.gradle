@@ -10,8 +10,8 @@ android {
         applicationId "com.dxablack.airhack"
         minSdk 24
         targetSdk 34
-        versionCode 12112024
-        versionName "1.2.1rev"
+        versionCode 13112024
+        versionName "1.2.2rev"
         ndkVersion '28.0.12433566'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
