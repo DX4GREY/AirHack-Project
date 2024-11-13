@@ -201,14 +201,14 @@ public class ScannerActivity extends DxaActivity {
             @SuppressLint("NewApi")
             @Override
             public void onTick() {
-                if (isAirodumpScan){
-                    refresh();
-                }
                 if (shellExecutor.isProcessRunning()) {
                     binding.fixInteface.setEnabled(false);
                     airodumpSwitch.setEnabled(false);
                     binding.progressBar.setVisibility(View.VISIBLE);
                     fab.setImageResource(android.R.drawable.ic_media_pause);
+                    if (isAirodumpScan){
+                        refresh();
+                    }
                 } else {
                     if (airodumpSwitch.isChecked()){
                         binding.fixInteface.setEnabled(false);
