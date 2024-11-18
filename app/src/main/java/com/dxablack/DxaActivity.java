@@ -27,7 +27,7 @@ public class DxaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isRootGrant = new ShellExecutor().startProcessAsRoot("su -c whoami");
+        isRootGrant = new ShellExecutor().startProcessAsRoot("whoami");
         if (!isRootGrant){
             new AlertDialog.Builder(this)
                     .setTitle("Error") // Judul dialog

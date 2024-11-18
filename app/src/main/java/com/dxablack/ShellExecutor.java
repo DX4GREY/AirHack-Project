@@ -5,8 +5,10 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class ShellExecutor {
 
@@ -41,11 +43,16 @@ public class ShellExecutor {
     // Menjalankan proses shell normal
     public boolean startProcess(String command) {
         try {
-            ProcessBuilder builder = new ProcessBuilder("sh", "-c", "\"" + command + "\"");
-            builder.redirectErrorStream(true);  // Menggabungkan error dengan output
-            process = builder.start();
+            process = Runtime.getRuntime().exec("/system/bin/sh");
+            OutputStream stdin = process.getOutputStream();
+            InputStream stdout = process.getInputStream();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            stdin.write((command + "\n").getBytes());
+            stdin.write(("exit $?" + "\n").getBytes());
+            stdin.flush();
+            stdin.close();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
             String line;
             output.setLength(0);  // Reset output
 
@@ -79,11 +86,16 @@ public class ShellExecutor {
     // Menjalankan proses shell sebagai root
     public boolean startProcessAsRoot(String command) {
         try {
-            ProcessBuilder builder = new ProcessBuilder("su", "-c", command);
-            builder.redirectErrorStream(true);  // Menggabungkan error dengan output
-            process = builder.start();
+            process = Runtime.getRuntime().exec("su -mm");
+            OutputStream stdin = process.getOutputStream();
+            InputStream stdout = process.getInputStream();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            stdin.write((command + "\n").getBytes());
+            stdin.write(("exit $?" + "\n").getBytes());
+            stdin.flush();
+            stdin.close();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
             String line;
             output.setLength(0);  // Reset output
 
