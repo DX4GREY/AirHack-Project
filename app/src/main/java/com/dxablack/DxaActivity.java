@@ -68,6 +68,20 @@ public class DxaActivity extends AppCompatActivity {
             writer.write(content);
         }
     }
+    public void removeMagiskNotification() {
+        String DATABASE_PATH = "/data/adb/magisk.db";
+        int uid = getApplicationInfo().uid;
+
+        String command = String.format(
+                "sqlite3 %s \"UPDATE policies SET notification = %d WHERE uid = %d;\";",
+                DATABASE_PATH, 0, uid
+        );
+        command += String.format(
+                "sqlite3 %s \"UPDATE policies SET logging = %d WHERE uid = %d;\";",
+                DATABASE_PATH, 0, uid
+        );
+        new ShellExecutor().startProcessAsRoot(command);
+    }
     public static boolean writeDataToFile(List<HashMap<String, String>> data, String filePath) {
         String TAG = "FileHelper";
         Gson gson = new Gson();

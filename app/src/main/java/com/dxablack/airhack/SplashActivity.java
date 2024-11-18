@@ -6,19 +6,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.dxablack.AttackFunction;
 import com.dxablack.DxaActivity;
 import com.dxablack.KaliShellExecutor;
 import com.dxablack.ShellExecutor;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 public class SplashActivity extends DxaActivity {
 
@@ -29,6 +24,7 @@ public class SplashActivity extends DxaActivity {
         EdgeToEdge.enable(this);
         // Mulai pengecekan NetHunter dan MDK4
         if (isRootGrant) {
+            removeMagiskNotification();
             new CheckNethunterInstallation().execute();
         }
     }
@@ -81,7 +77,7 @@ public class SplashActivity extends DxaActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    showTerminalDialog("apt update && apt install mdk4 -y");
+                                    showTerminalDialog("apt update -y && apt install mdk4 -y");
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

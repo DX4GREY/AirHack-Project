@@ -18,6 +18,7 @@ public class ShellExecutor {
 
     public ShellExecutor() {
         output = new StringBuilder();
+        startProcessAsRoot("[ $(getenforce) = \"Permissive\" ] && setenforce 0");
     }
 
     public ShellExecutor(boolean debug){
