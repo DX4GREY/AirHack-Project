@@ -101,7 +101,9 @@ public class MainActivity extends DxaActivity {
         refIntf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int intf = linterface.getSelectedItemPosition();
                 refreshListInterface();
+                linterface.setSelection(intf);
             }
         });
     }
