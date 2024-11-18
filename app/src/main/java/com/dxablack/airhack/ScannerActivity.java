@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -34,7 +35,9 @@ public class ScannerActivity extends DxaActivity {
     private FloatingActionButton fab;
     private ListView listView;
     private String wifiInterface;
+    private boolean usingAirodump = false;
     private Switch airodumpSwitch;
+    private String TAG = "ScannerActivity";
 
     private TickLoop airodumpTickLoop;
     private boolean isAirodumpScan = false;
@@ -51,6 +54,12 @@ public class ScannerActivity extends DxaActivity {
         fab = binding.scanButton;
         listView = binding.listAp;
         airodumpSwitch = binding.useAirodump;
+        airodumpSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                usingAirodump = b;
+            }
+        });
         binding.interfaceView.setText(wifiInterface);
         shellExecutor = new KaliShellExecutor(getApplicationContext());
         shellExecutor.setOutputListener(new ShellExecutor.OutputListener() {
@@ -79,13 +88,13 @@ public class ScannerActivity extends DxaActivity {
             public void onClick(View view) {
                 if (shellExecutor.isProcessRunning()) {
                     shellExecutor.stopProcess();
-                    if (airodumpSwitch.isChecked()){
+                    if (usingAirodump){
                         isAirodumpScan = false;
                         new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("rm -rf " + AttackFunction.csvPathAirodump());
                     }
                 } else {
                     new KaliShellExecutor(getApplicationContext()).runKaliRootAsync("mkdir -p " + AttackFunction.csvPathAirodump());
-                    if (!airodumpSwitch.isChecked())
+                    if (!usingAirodump)
                         startScan();
                     else {
                         shellExecutor.runKaliRootAsync("airodump-ng --output-format csv -w " +
@@ -120,14 +129,18 @@ public class ScannerActivity extends DxaActivity {
         });
     }
     private void refresh(){
-        if (!TextUtils.isEmpty(shellExecutor.getLastOutput()) && !shellExecutor.getLastOutput().contains("Network is down")) {
-            if (airodumpSwitch.isChecked()) {
+        if (!TextUtils.isEmpty(shellExecutor.getLastOutput()) | !shellExecutor.getLastOutput().contains("Network is down")) {
+            Log.d(TAG, "refresh: " + usingAirodump);
+            if (usingAirodump) {
+                Log.d(TAG, String.format("refresh: %s", "Airodump checked."));
                 KaliShellExecutor csvRawReader = new KaliShellExecutor(getApplicationContext());
 
                 // Menjalankan perintah untuk membaca file CSV jika ada
-                if (csvRawReader.runKaliRoot("cat " + AttackFunction.csvPathAirodump() + "/*.csv")) {
+                csvRawReader.runKaliRoot("cat " +
+                        AttackFunction.csvPathAirodump() + "/*.csv");
+
+                if (!TextUtils.isEmpty(removeFirstLine(csvRawReader.getLastOutput()))) {
                     CSVManagerAP csvManagerAP = new CSVManagerAP();
-                    if (TextUtils.isEmpty(removeFirstLine(csvRawReader.getLastOutput()))) return;
                     csvManagerAP.readSectionFromText(removeFirstLine(csvRawReader.getLastOutput()));
 
                     ArrayList<HashMap<String, String>> tmpArray = new ArrayList<>();
@@ -210,7 +223,7 @@ public class ScannerActivity extends DxaActivity {
                         refresh();
                     }
                 } else {
-                    if (airodumpSwitch.isChecked()){
+                    if (usingAirodump){
                         binding.fixInteface.setEnabled(false);
                     }else{
                         binding.fixInteface.setEnabled(true);
