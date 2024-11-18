@@ -110,6 +110,32 @@ public class DxaActivity extends AppCompatActivity {
 
         return shellExecutor.startProcessAsRoot(command);
     }
+    public static boolean writeDataToFile(String data, String filePath) {
+        String TAG = "FileHelper";
+
+        ShellExecutor shellExecutor = new ShellExecutor();
+        shellExecutor.setOutputListener(new ShellExecutor.OutputListener() {
+            @Override
+            public void onNewOutput(String outputLine) {
+                Log.d(TAG, "Shell Output: " + outputLine);
+            }
+
+            @Override
+            public void onError(String errorLine) {
+                Log.e(TAG, "Shell Error: " + errorLine);
+            }
+
+            @Override
+            public void onCommandFinished() {
+                Log.d(TAG, "Shell Command Finished");
+            }
+        });
+
+        // Buat perintah untuk menulis ke file sebagai root
+        String command = "echo '" + data.replace("'", "\\'") + "' > " + filePath;
+
+        return shellExecutor.startProcessAsRoot(command);
+    }
     public String removeFirstLine(String input) {
         // Mencari posisi baris baru (\n) pertama
         int newlineIndex = input.indexOf("\n");
