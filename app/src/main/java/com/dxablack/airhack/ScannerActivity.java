@@ -213,7 +213,7 @@ public class ScannerActivity extends DxaActivity {
             @SuppressLint("NewApi")
             @Override
             public void onTick() {
-                binding.interfaceView.setText(wifiInterface);
+                binding.interfaceView.setText(String.format("Interface: %s", wifiInterface));
                 if (shellExecutor.isProcessRunning()) {
                     binding.fixInteface.setEnabled(false);
                     airodumpSwitch.setEnabled(false);
