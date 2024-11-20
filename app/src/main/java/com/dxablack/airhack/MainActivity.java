@@ -54,8 +54,8 @@ public class MainActivity extends DxaActivity {
     private String wifiInterface = "wlan0";
     private Spinner linterface;
     private ArrayList<String> ifList;
-    private Button refIntf, goScan;
-    private FloatingActionButton fab;
+    private Button refIntf;
+    private FloatingActionButton fab, goScan;
     private boolean isAttackModeSelected = false;
     private TextView viewNowCommand, outputView;
     private ViewGroup content;
