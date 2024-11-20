@@ -11,22 +11,35 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <include layout="@layout/title_airhack"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"/> <!-- Margin for spacing -->
-        <TextView
-            android:id="@+id/interfaceView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:text="@string/app_name"/>
-        <Switch
-            android:id="@+id/use_airodump"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
-            android:text="Airodump-ng scanner" />
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/interfaceView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:layout_weight="1.0"
+                android:text="@string/app_name"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:text="airodump-ng mode"/>
+                <Switch
+                    android:id="@+id/use_airodump"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="8dp"/>
+            </LinearLayout>
+        </LinearLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
