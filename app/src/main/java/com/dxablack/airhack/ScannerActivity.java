@@ -60,7 +60,6 @@ public class ScannerActivity extends DxaActivity {
                 usingAirodump = b;
             }
         });
-        binding.interfaceView.setText(wifiInterface);
         shellExecutor = new KaliShellExecutor(getApplicationContext());
         shellExecutor.setOutputListener(new ShellExecutor.OutputListener() {
             @Override
@@ -214,6 +213,7 @@ public class ScannerActivity extends DxaActivity {
             @SuppressLint("NewApi")
             @Override
             public void onTick() {
+                binding.interfaceView.setText(wifiInterface);
                 if (shellExecutor.isProcessRunning()) {
                     binding.fixInteface.setEnabled(false);
                     airodumpSwitch.setEnabled(false);
