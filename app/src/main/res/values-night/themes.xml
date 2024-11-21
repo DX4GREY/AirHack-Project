@@ -4,6 +4,4 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
-
-    <color name="iconColor">#FFFFFF</color>
 </resources>

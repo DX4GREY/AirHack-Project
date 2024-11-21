@@ -4,10 +4,4 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
-
-    <style name="Theme.AirHack" parent="Base.Theme.AirHack">
-        <item name="android:fontFamily">monospace</item>
-    </style>
-
-    <color name="iconColor">#000000</color>
 </resources>
