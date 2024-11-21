@@ -1,4 +1,4 @@
-#!/data/data/com.dxablack.airhack/files/bin/bash
+#!/system/bin/sh
 # Version: 1.0.2
 
 # export path for android bins/tools
