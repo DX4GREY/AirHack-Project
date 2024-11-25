@@ -28,34 +28,60 @@ public class InterfaceManager {
         }
         return false;
     }
-    public static ArrayList<HashMap<String, Object>> getListInterface(Context context) {
+    public static ArrayList<HashMap<String, String>> getListInterface(Context context) {
         shell = new KaliShellExecutor(context);
-        ArrayList<HashMap<String, Object>> tmpList = new ArrayList<>();
+        ArrayList<HashMap<String, String>> tmpList = new ArrayList<>();
         String[] tmpArr;
         // Jalankan perintah dan pastikan berhasil
-        boolean success = shell.runKaliRoot("airmon-ng");
+        boolean success = shell.runKaliRoot("iw dev");
 
         if (success) {
-            // Ambil output setelah proses selesai
-            String text = transformText(shell.getLastOutput());
-            String[] options = text.replaceAll("Interface,", "").split(",");
-            Log.d("Root", "getListInterface: " + text);
-            tmpArr = options;
+            tmpList = parseInterfaces(shell.getLastOutput());
         } else {
             // Jika gagal menjalankan perintah
-            Log.e("Root", "Failed to run airmon-ng");
+            Log.e("Root", "Failed to run iw dev");
             tmpArr = new String[]{};
         }
-        if (tmpArr != null){
-            for (String item: tmpArr) {
-                shell.runKaliRoot("ethtool -i " + item + " | grep driver | awk '{print $2}'");
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("interface", item);
-                map.put("driver", shell.getLastOutput().replaceAll("\n", "").replaceAll("\\s+", ""));
-                tmpList.add(map);
+        if (tmpList != null){
+            for (HashMap<String, String> hashMap : tmpList) {
+                shell.runKaliRoot("ethtool -i " + hashMap.get("Interface") + " | grep driver | awk '{print $2}'");
+                hashMap.put("interface", hashMap.get("Interface"));
+                hashMap.put("driver", shell.getLastOutput().replaceAll("\n", "").replaceAll("\\s+", ""));
             }
         }
         return tmpList;
+    }
+    private static ArrayList<HashMap<String, String>> parseInterfaces(String input) {
+        ArrayList<HashMap<String, String>> interfaceList = new ArrayList<>();
+        String[] lines = input.split("\n");
+
+        HashMap<String, String> currentInterface = null;
+
+        for (String line : lines) {
+            line = line.trim(); // Remove leading/trailing spaces
+            if (line.startsWith("Interface")) {
+                // Save the previous interface before starting a new one
+                if (currentInterface != null) {
+                    interfaceList.add(currentInterface);
+                }
+                // Create a new interface map
+                currentInterface = new HashMap<>();
+                currentInterface.put("Interface", line.split(" ")[1]); // Get the interface name
+            } else if (currentInterface != null && !line.isEmpty()) {
+                // Add other details to the current interface
+                String[] parts = line.split(" ", 2);
+                if (parts.length == 2) {
+                    currentInterface.put(parts[0], parts[1]);
+                }
+            }
+        }
+
+        // Add the last interface
+        if (currentInterface != null) {
+            interfaceList.add(currentInterface);
+        }
+
+        return interfaceList;
     }
     public static void fixInterface(KaliShellExecutor shellExecutor, String intface){
         shellExecutor.runKaliRootAsync("ifconfig " + intface + " up");
