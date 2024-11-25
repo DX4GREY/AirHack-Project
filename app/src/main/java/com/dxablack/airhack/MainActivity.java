@@ -188,7 +188,7 @@ public class MainActivity extends DxaActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<HashMap<String, Object>> itemList = InterfaceManager.getListInterface(MainActivity.this);
+                ArrayList<HashMap<String, String>> itemList = InterfaceManager.getListInterface(MainActivity.this);
                 if (itemList != null || !itemList.isEmpty()){
                     ifList = new ArrayList<>();
                     ArrayList<String> adapterList = new ArrayList<>();
