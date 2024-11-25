@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.dxablack.airhack"
-        minSdk 24
+        minSdk 26
         targetSdk 34
         versionCode 20112024
         versionName "2.0.0-draco"
