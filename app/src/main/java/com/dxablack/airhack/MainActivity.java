@@ -418,6 +418,12 @@ public class MainActivity extends DxaActivity {
                         terminalDialog.show(fragmentManager, "TerminalDialogFragment");
                     }
                 })
+                .setNeutralButton("Force Attack", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        shell.runKaliRootAsync(getNowCommand());
+                    }
+                })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
