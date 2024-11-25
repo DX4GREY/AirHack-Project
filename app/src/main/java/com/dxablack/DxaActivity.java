@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.color.DynamicColors;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -33,6 +34,7 @@ public class DxaActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        DynamicColors.applyToActivityIfAvailable(this);
         isRootGrant = new ShellExecutor().startProcessAsRoot("whoami");
         if (!isRootGrant){
             new AlertDialog.Builder(this)
