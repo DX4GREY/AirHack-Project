@@ -10,8 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Base.Theme.AirHack"
-        tools:targetApi="31">
+        android:theme="@style/Base.Theme.AirHack">
         <activity
             android:name=".ScannerActivity"
             android:exported="true" />
