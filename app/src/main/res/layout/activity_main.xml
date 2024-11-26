@@ -22,10 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <Spinner
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
                 android:layout_weight="1.0"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:id="@+id/list_interface"/>
             <Button
                 android:layout_width="wrap_content"
@@ -41,7 +40,7 @@
             android:background="@android:color/darker_gray"/> <!-- Margin for spacing -->
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:padding="8dp"
             android:layout_weight="1.0">
             <LinearLayout
@@ -98,14 +97,14 @@
             android:id="@+id/output_attack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:singleLine="true"
             android:scrollHorizontally="true"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/now_command"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:singleLine="true"
             android:scrollHorizontally="true"/>
     </LinearLayout>
@@ -119,9 +118,7 @@
             android:id="@+id/next_scan_ap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_marginEnd="16dp"
-            android:layout_alignParentEnd="true"
             android:contentDescription="@string/mini_fab_desc"
             app:srcCompat="@drawable/baseline_wifi"
             app:fabCustomSize="42dp"/>
@@ -132,6 +129,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:contentDescription="@string/mini_fab_desc"
             app:srcCompat="@android:drawable/ic_media_play"
             android:id="@+id/fab"/>
     </LinearLayout>
