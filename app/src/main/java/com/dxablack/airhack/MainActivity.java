@@ -71,6 +71,10 @@ public class MainActivity extends DxaActivity {
         refreshListInterface();
 
         addAttackModes();
+        if(attackSelectView.getChildCount() > 0) {
+            ((RadioButton) attackSelectView.getChildAt(0)).setChecked(true);
+            refreshAttackParameter();
+        }
 
         nowCommand = new ArrayList<>();
         nowCommand.add(AttackFunction.mainCommand());
@@ -79,9 +83,7 @@ public class MainActivity extends DxaActivity {
         attackSelectView.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                attackId = attackSelectView.getCheckedRadioButtonId();
-                addAttackParameter(attackId);
-                isAttackModeSelected = true;
+                refreshAttackParameter();
             }
         });
         linterface.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -106,7 +108,11 @@ public class MainActivity extends DxaActivity {
             }
         });
     }
-
+    private void refreshAttackParameter(){
+        attackId = attackSelectView.getCheckedRadioButtonId();
+        addAttackParameter(attackId);
+        isAttackModeSelected = true;
+    }
     private void bindView(){
         shell = new KaliShellExecutor(MainActivity.this);
         tickLoop = new TickLoop();
