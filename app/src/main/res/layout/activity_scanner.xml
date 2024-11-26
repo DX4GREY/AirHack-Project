@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="8dp"
-                    android:text="airodump-ng mode"/>
+                    android:text="@string/airodump_ng_mode"/>
                 <Switch
                     android:id="@+id/use_airodump"
                     android:layout_width="wrap_content"

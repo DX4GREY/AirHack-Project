@@ -44,4 +44,14 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="advanced_wifi_attack_toolkit">Advanced WiFi Attack Toolkit</string>
+    <string name="airodump_ng_mode">airodump-ng mode</string>
+    <string name="string_refresh">Refresh</string>
+    <string name="attack_mode_title">Attack Modes:</string>
+    <string name="attack_parameter_title">Attack Parameter:</string>
+    <string name="mini_fab_desc">Mini FAB</string>
+    <string name="ssid_def">SSID</string>
+    <string name="signal_strength_def">Signal Strength</string>
+    <string name="bssid_def">BSSID</string>
+    <string name="frequency_def">Frequency</string>
 </resources>

@@ -30,7 +30,7 @@
         android:id="@+id/app_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Advanced WiFi Attack Toolkit"
+        android:text="@string/advanced_wifi_attack_toolkit"
         android:textSize="12sp"
         android:layout_below="@id/app_name"
         android:layout_centerHorizontal="true"

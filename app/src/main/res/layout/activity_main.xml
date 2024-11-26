@@ -30,7 +30,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Refresh"
+                android:text="@string/string_refresh"
                 android:textStyle="bold"
                 android:id="@+id/refresh_interface"/>
         </LinearLayout>
@@ -58,7 +58,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Attack Modes:"/>
+                        android:text="@string/attack_mode_title"/>
                     <RadioGroup
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Attack Parameter:"/>
+                        android:text="@string/attack_parameter_title"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -122,7 +122,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="16dp"
             android:layout_alignParentEnd="true"
-            android:contentDescription="Mini FAB"
+            android:contentDescription="@string/mini_fab_desc"
             app:srcCompat="@drawable/baseline_wifi"
             app:fabCustomSize="42dp"/>
 
