@@ -12,8 +12,17 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.AirHack">
         <activity
+            android:label="@string/scanner_app_name"
+            android:icon="@mipmap/ic_scanner"
+            android:roundIcon="@mipmap/ic_scanner_round"
             android:name=".ScannerActivity"
-            android:exported="true" />
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".SplashActivity"
             android:exported="true">
