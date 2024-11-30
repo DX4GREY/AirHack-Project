@@ -104,19 +104,4 @@ public class SplashActivity extends DxaActivity {
             return new KaliShellExecutor(SplashActivity.this).runKaliRoot("which mdk4");
         }
     }
-    private void showTerminalDialog(String command) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance(command, SplashActivity.this);
-        terminalDialog.show(fragmentManager, "TerminalDialogFragment");
-        terminalDialog.setCancelable(false);
-        terminalDialog.setAutoClose(true);
-        terminalDialog.setOnCloseClickedListener(new TerminalDialogFragment.OnCloseClickedListener() {
-            @Override
-            public void onClick(View view, int code) {
-                Intent intent = getIntent();
-                finish(); // Menghentikan aktivitas saat ini
-                startActivity(intent); // Memulai kembali aktivitas yang sama
-            }
-        });
-    }
 }
