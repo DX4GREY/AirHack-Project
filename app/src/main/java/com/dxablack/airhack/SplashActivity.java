@@ -15,6 +15,7 @@ import com.dxablack.DxaActivity;
 import com.dxablack.KaliShellExecutor;
 import com.dxablack.ShellExecutor;
 import com.dxablack.bridge.Bridge;
+import com.dxablack.bridge.CheckNethunterInstallation;
 
 public class SplashActivity extends DxaActivity {
 
@@ -26,82 +27,24 @@ public class SplashActivity extends DxaActivity {
         // Mulai pengecekan NetHunter dan MDK4
         if (isRootGrant) {
             removeMagiskNotification();
-            new CheckNethunterInstallation().execute();
-        }
-    }
-
-    // AsyncTask untuk mengecek NetHunter dan MDK4
-    private class CheckNethunterInstallation extends AsyncTask<Void, Void, Boolean> {
-        private boolean isMDK4Installed = true;
-        private boolean isNethunterInstalled = true;
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            // Mengecek apakah NetHunter full terinstall
-             isNethunterInstalled = checkNethunter();
-            if (!isNethunterInstalled) {
-                return false; // Jika NetHunter tidak terinstal, hentikan proses
-            }
-
-            // Mengecek apakah MDK4 terinstall di NetHunter
-            isMDK4Installed = checkMDK4();
-            return isMDK4Installed;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                // Jika pengecekan berhasil, pindah ke MainActivity
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                // Tampilkan pesan jika NetHunter atau MDK4 tidak terinstall
-
-                if (!isNethunterInstalled){
-                    new AlertDialog.Builder(SplashActivity.this)
-                            .setTitle("Error")
-                            .setCancelable(false)
-                            .setMessage("RootFS is not installed or not mount it!, install in " + AttackFunction.rootFsPath() + " then try again")
-                            .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            finishAffinity();
-                                        }
-                                    })
-                            .show();
+            CheckNethunterInstallation checker = new CheckNethunterInstallation(SplashActivity.this);
+            checker.setOnTaskListener(new com.dxablack.bridge.CheckNethunterInstallation.OnTaskListener() {
+                @Override
+                public void onTaskInit() {
+                    // TODO task init
                 }
-                if (!isMDK4Installed){
-                    new AlertDialog.Builder(SplashActivity.this)
-                            .setTitle("Installer")
-                            .setCancelable(false)
-                            .setMessage("Install mdk4?")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = Bridge.createExecuteIntent("/data/data/com.offsec.nhterm/files/usr/bin/kali", "clear; echo \"Installing mdk4...\";apt update -y && apt install mdk4 -y; echo \"Successfully install mdk4...\"; exit");
-                                    startActivity(intent);
-                                    finishAffinity();
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    finishAffinity();
-                                }
-                            })
-                            .show();
+
+                @Override
+                public void onTaskCompleted(Boolean result) {
+                    if (result) {
+                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
                 }
-            }
-        }
-
-        // Fungsi untuk mengecek apakah NetHunter full terinstall
-        private boolean checkNethunter() {
-            return new ShellExecutor().startProcessAsRoot("[ -d " + AttackFunction.rootFsPath() + "/sys/class ] && exit 0 || exit 1");
-        }
-
-        // Fungsi untuk mengecek apakah MDK4 terinstall di NetHunter
-        private boolean checkMDK4() {
-            return new KaliShellExecutor(SplashActivity.this).runKaliRoot("which mdk4");
+            });
+            checker.execute();
         }
     }
 }
