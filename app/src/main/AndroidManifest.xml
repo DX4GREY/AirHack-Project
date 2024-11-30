@@ -28,6 +28,7 @@
             android:label="@string/scanner_app_name"
             android:icon="@mipmap/ic_scanner"
             android:roundIcon="@mipmap/ic_scanner_round"
+            android:taskAffinity="com.dxablack.airhack.scanner"
             android:name=".ScannerActivity"
             android:exported="true" >
             <intent-filter>
