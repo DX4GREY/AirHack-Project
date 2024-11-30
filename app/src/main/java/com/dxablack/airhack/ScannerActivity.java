@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
@@ -21,6 +22,7 @@ import com.dxablack.KaliShellExecutor;
 import com.dxablack.ShellExecutor;
 import com.dxablack.TickLoop;
 import com.dxablack.airhack.databinding.ActivityScannerBinding;
+import com.dxablack.bridge.CheckNethunterInstallation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -50,6 +52,25 @@ public class ScannerActivity extends DxaActivity {
         binding = ActivityScannerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        if (isRootGrant) {
+            removeMagiskNotification();
+            CheckNethunterInstallation checker = new CheckNethunterInstallation(ScannerActivity.this);
+            checker.setOnTaskListener(new CheckNethunterInstallation.OnTaskListener() {
+                @Override
+                public void onTaskInit() {
+                    // TODO task init
+                }
+
+                @Override
+                public void onTaskCompleted(Boolean result) {
+                    if (result)
+                        initActivity();
+                }
+            });
+            checker.execute();
+        }
+    }
+    private void initActivity(){
         Bundle extras = getIntent().getExtras();
 
         fab = binding.scanButton;
