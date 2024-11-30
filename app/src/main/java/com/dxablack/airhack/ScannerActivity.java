@@ -1,6 +1,7 @@
 package com.dxablack.airhack;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -49,7 +50,13 @@ public class ScannerActivity extends DxaActivity {
         binding = ActivityScannerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        wifiInterface = getIntent().getExtras().get("interface").toString();
+        Bundle extras = getIntent().getExtras();
+
+        if (extras != null && extras.containsKey("interface")) {
+            wifiInterface = extras.getString("interface");
+        } else {
+            interfaceSelectorDialog();
+        }
 
         fab = binding.scanButton;
         listView = binding.listAp;
@@ -294,5 +301,42 @@ public class ScannerActivity extends DxaActivity {
         }
 
         return wifiList;
+    }
+    public void interfaceSelectorDialog(){
+        ArrayList<HashMap<String, String>> itemList = InterfaceManager.getListInterface(this);
+
+        if (itemList != null && !itemList.isEmpty()) {
+            ArrayList<String> ifList = new ArrayList<>();
+            ArrayList<String> adapterList = new ArrayList<>();
+
+            for (HashMap<String, String> map : itemList) {
+                String interfaceName = map.get("interface");
+                String driverName = map.get("driver");
+                ifList.add(interfaceName);
+                adapterList.add(interfaceName + " : " + driverName);
+            }
+
+            // Membuat dialog pilihan
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Select Interface");
+
+            // Konversi daftar untuk AlertDialog
+            String[] options = adapterList.toArray(new String[0]);
+
+            builder.setItems(options, (dialog, which) -> {
+                // Ambil nama interface berdasarkan indeks pilihan
+                String selectedInterface = ifList.get(which);
+
+                // Menampilkan interface yang dipilih
+                wifiInterface = selectedInterface;
+
+                // Lakukan sesuatu dengan nama interface
+                // Misalnya, simpan ke variabel global atau gunakan dalam logika aplikasi
+            });
+
+            builder.setNegativeButton("Batal", (dialog, which) -> dialog.dismiss());
+            builder.show();
+        }
+
     }
 }
