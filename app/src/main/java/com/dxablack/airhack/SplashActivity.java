@@ -80,6 +80,7 @@ public class SplashActivity extends DxaActivity {
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Intent intent = Bridge.createExecuteIntent("/data/data/com.offsec.nhterm/files/usr/bin/kali", "clear; echo \"Installing mdk4...\";apt update -y && apt install mdk4 -y; echo \"Successfully install mdk4...\"; exit");
                                     startActivity(intent);
+                                    finishAffinity();
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
