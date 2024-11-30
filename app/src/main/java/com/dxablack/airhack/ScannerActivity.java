@@ -52,12 +52,6 @@ public class ScannerActivity extends DxaActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        if (extras != null && extras.containsKey("interface")) {
-            wifiInterface = extras.getString("interface");
-        } else {
-            interfaceSelectorDialog();
-        }
-
         fab = binding.scanButton;
         listView = binding.listAp;
         airodumpSwitch = binding.useAirodump;
@@ -111,22 +105,12 @@ public class ScannerActivity extends DxaActivity {
                 }
             }
         });
-
-        tick();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng stop " + wifiInterface +
-                        "; ifconfig " + wifiInterface + " up",
-                ScannerActivity.this);
-        terminalDialog.show(fragmentManager, "TerminalDialogFragment");
-        terminalDialog.setCancelable(false);
-        terminalDialog.setAutoClose(true);
-        terminalDialog.setOnCloseClickedListener(new TerminalDialogFragment.OnCloseClickedListener() {
-            @Override
-            public void onClick(View view, int code) {
-                wifiInterface = wifiInterface.replace("mon", "");
-                startScan();
-            }
-        });
+        if (extras != null && extras.containsKey("interface")) {
+            wifiInterface = extras.getString("interface");
+            start();
+        } else {
+            interfaceSelectorDialog();
+        }
         binding.fixInteface.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -319,6 +303,7 @@ public class ScannerActivity extends DxaActivity {
             // Membuat dialog pilihan
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Select Interface");
+            builder.setCancelable(false);
 
             // Konversi daftar untuk AlertDialog
             String[] options = adapterList.toArray(new String[0]);
@@ -329,14 +314,29 @@ public class ScannerActivity extends DxaActivity {
 
                 // Menampilkan interface yang dipilih
                 wifiInterface = selectedInterface;
-
+                start();
                 // Lakukan sesuatu dengan nama interface
                 // Misalnya, simpan ke variabel global atau gunakan dalam logika aplikasi
             });
-
-            builder.setNegativeButton("Batal", (dialog, which) -> dialog.dismiss());
             builder.show();
         }
 
+    }
+    private void start(){
+        tick();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng stop " + wifiInterface +
+                        "; ifconfig " + wifiInterface + " up",
+                ScannerActivity.this);
+        terminalDialog.show(fragmentManager, "TerminalDialogFragment");
+        terminalDialog.setCancelable(false);
+        terminalDialog.setAutoClose(true);
+        terminalDialog.setOnCloseClickedListener(new TerminalDialogFragment.OnCloseClickedListener() {
+            @Override
+            public void onClick(View view, int code) {
+                wifiInterface = wifiInterface.replace("mon", "");
+                startScan();
+            }
+        });
     }
 }
