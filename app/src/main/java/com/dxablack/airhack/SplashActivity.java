@@ -14,6 +14,7 @@ import com.dxablack.AttackFunction;
 import com.dxablack.DxaActivity;
 import com.dxablack.KaliShellExecutor;
 import com.dxablack.ShellExecutor;
+import com.dxablack.bridge.Bridge;
 
 public class SplashActivity extends DxaActivity {
 
@@ -77,7 +78,8 @@ public class SplashActivity extends DxaActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    showTerminalDialog("apt update -y && apt install mdk4 -y");
+                                    Intent intent = Bridge.createExecuteIntent("/data/data/com.offsec.nhterm/files/usr/bin/kali", "clear; echo \"Installing mdk4...\";apt update -y && apt install mdk4 -y; echo \"Successfully install mdk4...\"; exit");
+                                    startActivity(intent);
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
