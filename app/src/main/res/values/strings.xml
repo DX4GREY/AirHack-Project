@@ -54,4 +54,5 @@
     <string name="signal_strength_def">Signal Strength</string>
     <string name="bssid_def">BSSID</string>
     <string name="frequency_def">Frequency</string>
+    <string name="scanner_app_name">AP Scanner</string>
 </resources>
