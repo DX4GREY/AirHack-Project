@@ -2,6 +2,7 @@ package com.dxablack.airhack;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -325,6 +326,12 @@ public class ScannerActivity extends DxaActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Select Interface");
             builder.setCancelable(false);
+            builder.setPositiveButton(R.string.refresh, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    interfaceSelectorDialog();
+                }
+            });
 
             // Konversi daftar untuk AlertDialog
             String[] options = adapterList.toArray(new String[0]);
