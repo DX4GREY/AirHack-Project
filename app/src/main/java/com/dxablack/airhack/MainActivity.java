@@ -71,14 +71,15 @@ public class MainActivity extends DxaActivity {
         refreshListInterface();
 
         addAttackModes();
-        if(attackSelectView.getChildCount() > 0) {
-            ((RadioButton) attackSelectView.getChildAt(0)).setChecked(true);
-            refreshAttackParameter();
-        }
 
         nowCommand = new ArrayList<>();
         nowCommand.add(AttackFunction.mainCommand());
         nowCommand.add(wifiInterface);
+
+        if(attackSelectView.getChildCount() > 0) {
+            ((RadioButton) attackSelectView.getChildAt(0)).setChecked(true);
+            refreshAttackParameter();
+        }
 
         attackSelectView.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
             @Override
