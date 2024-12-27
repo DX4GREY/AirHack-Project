@@ -442,7 +442,12 @@ public class MainActivity extends DxaActivity {
     }
     private void addMessage(String msg) {
         // append the new string
-        outputView.setText(msg);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outputView.setText(msg);
+            }
+        });
         // find the amount we need to scroll.  This works by
         // asking the TextView's internal layout for the position
         // of the final line and then subtracting the TextView's height
