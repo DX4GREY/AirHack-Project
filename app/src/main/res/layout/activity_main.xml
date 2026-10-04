@@ -7,132 +7,231 @@
     android:layout_height="match_parent"
     android:id="@+id/root_layout"
     android:fitsSystemWindows="true"
+    android:background="?android:colorBackground"
     tools:context=".MainActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:orientation="vertical">
-        <include layout="@layout/title_airhack"/>
-        <LinearLayout
+
+        <!-- Top Header & Interface Picker Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Spinner
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1.0"
-                android:id="@+id/list_interface"/>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/string_refresh"
-                android:textStyle="bold"
-                android:id="@+id/refresh_interface"/>
-        </LinearLayout>
-    </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"/> <!-- Margin for spacing -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            android:layout_weight="1.0">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutline"
+            app:cardBackgroundColor="?attr/colorSurface">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="16dp"
                 android:orientation="vertical">
+
+                <include layout="@layout/title_airhack"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/network_interface_label"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:letterSpacing="0.08"
+                    android:layout_marginBottom="8dp"/>
+
                 <LinearLayout
-                    android:background="@drawable/border"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:orientation="vertical">
-                    <TextView
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1.0"
+                        android:background="@drawable/bg_spinner_interface"
+                        android:paddingHorizontal="10dp"
+                        android:id="@+id/list_interface"/>
+
+                    <com.google.android.material.button.MaterialButton
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/attack_mode_title"/>
-                    <RadioGroup
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:id="@+id/attack_modes"/>
+                        android:layout_height="48dp"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/string_refresh"
+                        app:cornerRadius="10dp"
+                        android:id="@+id/refresh_interface"/>
                 </LinearLayout>
-                <LinearLayout
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Main Scrollable Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingHorizontal="16dp"
+            android:clipToPadding="false"
+            android:layout_weight="1.0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="90dp"
+                android:orientation="vertical">
+
+                <!-- Attack Modes Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
-                    android:background="@drawable/border"
-                    android:id="@+id/param_layout"
-                    android:visibility="gone"
-                    android:orientation="vertical"
-                    android:padding="8dp"
-                    android:layout_height="match_parent">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/attack_parameter_title"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="?attr/colorOutline"
+                    app:cardBackgroundColor="?attr/colorSurface">
+
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/attack_parameter"
-                        android:padding="8dp"
-                        android:orientation="vertical"/>
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05"
+                            android:textColor="?attr/colorOnSurface"
+                            android:text="@string/attack_mode_title"/>
+
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:id="@+id/attack_modes"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Attack Parameter Container -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/param_layout"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="?attr/colorOutline"
+                        app:cardBackgroundColor="?attr/colorSurface">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.05"
+                                android:textColor="?attr/colorOnSurface"
+                                android:text="@string/attack_parameter_title"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/attack_parameter"
+                                android:paddingTop="10dp"
+                                android:orientation="vertical"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
+    <!-- Bottom Command Status Transparent Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:alpha="0.5"
+        android:background="@android:color/transparent"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="10dp"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/now_command"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:typeface="monospace"
+            android:textColor="?attr/colorOnSurface"
+            android:alpha="0.8"
+            android:singleLine="true"
+            android:ellipsize="start"
+            android:scrollHorizontally="true"/>
+
         <TextView
             android:id="@+id/output_attack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="11sp"
+            android:typeface="monospace"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:alpha="0.7"
             android:singleLine="true"
-            android:scrollHorizontally="true"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/now_command"
-            android:textSize="12sp"
-            android:singleLine="true"
+            android:ellipsize="end"
             android:scrollHorizontally="true"/>
     </LinearLayout>
+
+    <!-- Action FABs -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:gravity="bottom|end"
         android:orientation="vertical">
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/next_scan_ap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:contentDescription="@string/mini_fab_desc"
+            app:backgroundTint="?attr/colorSurfaceVariant"
+            app:tint="?attr/colorOnSurfaceVariant"
             app:srcCompat="@drawable/baseline_wifi"
-            app:fabCustomSize="42dp"/>
+            app:fabCustomSize="46dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="62dp"
             android:contentDescription="@string/mini_fab_desc"
+            app:backgroundTint="?attr/colorPrimary"
+            app:tint="?attr/colorOnPrimary"
             app:srcCompat="@android:drawable/ic_media_play"
             android:id="@+id/fab"/>
     </LinearLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

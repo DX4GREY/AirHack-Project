@@ -1,38 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:colorBackground"
     android:gravity="center">
-    <!-- Ikon Aplikasi -->
+
     <ImageView
         android:id="@+id/splash_icon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:src="@mipmap/ic_launcher_round"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/app_name" />
 
-    <!-- Nama Aplikasi -->
     <TextView
         android:id="@+id/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name_full"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/colorOnSurface"
         android:textStyle="bold"
+        android:letterSpacing="0.04"
         android:layout_below="@id/splash_icon"
         android:layout_centerHorizontal="true"
-        android:paddingTop="10dp" />
+        android:paddingTop="16dp" />
 
-    <!-- Deskripsi Aplikasi -->
     <TextView
         android:id="@+id/app_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/advanced_wifi_attack_toolkit"
-        android:textSize="12sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="13sp"
         android:layout_below="@id/app_name"
         android:layout_centerHorizontal="true"
-        android:paddingTop="5dp" />
+        android:paddingTop="4dp" />
+
 </RelativeLayout>

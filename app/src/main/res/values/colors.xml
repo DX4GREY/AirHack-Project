@@ -2,4 +2,32 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Monochrome / System Dynamic Colors fallback (Light) -->
+    <color name="md_theme_light_primary">#000000</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#1A1A1A</color>
+    <color name="md_theme_light_surfaceVariant">#F4F4F6</color>
+    <color name="md_theme_light_onSurfaceVariant">#5E6166</color>
+    <color name="md_theme_light_outline">#E0E2E7</color>
+    <color name="md_theme_light_background">#F8F9FA</color>
+    <color name="md_theme_light_onBackground">#1A1A1A</color>
+
+    <!-- Monochrome fallback (Dark) -->
+    <color name="md_theme_dark_primary">#FFFFFF</color>
+    <color name="md_theme_dark_onPrimary">#000000</color>
+    <color name="md_theme_dark_surface">#161616</color>
+    <color name="md_theme_dark_onSurface">#EEEEEE</color>
+    <color name="md_theme_dark_surfaceVariant">#222222</color>
+    <color name="md_theme_dark_onSurfaceVariant">#A0A0A0</color>
+    <color name="md_theme_dark_outline">#333333</color>
+    <color name="md_theme_dark_background">#0E0E0E</color>
+    <color name="md_theme_dark_onBackground">#EEEEEE</color>
+
+    <!-- Terminal Colors -->
+    <color name="terminal_light_bg">#18191B</color>
+    <color name="terminal_light_text">#E6EDF3</color>
+    <color name="terminal_dark_bg">#0A0A0B</color>
+    <color name="terminal_dark_text">#E6EDF3</color>
 </resources>

@@ -10,9 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.dxablack.AttackFunction;
@@ -28,6 +28,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,11 +42,12 @@ public class ScannerActivity extends DxaActivity {
     private ListView listView;
     private String wifiInterface;
     private boolean usingAirodump = false;
-    private Switch airodumpSwitch;
+    private SwitchCompat airodumpSwitch;
     private String TAG = "ScannerActivity";
 
-    private TickLoop airodumpTickLoop;
     private boolean isAirodumpScan = false;
+    private final ExecutorService scanExecutor = Executors.newSingleThreadExecutor();
+    private boolean isRefreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +105,7 @@ public class ScannerActivity extends DxaActivity {
             }
         });
 
-        tickLoop = new TickLoop(100);
+        tickLoop = new TickLoop(500);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NewApi")
@@ -141,82 +144,89 @@ public class ScannerActivity extends DxaActivity {
         });
     }
     private void refresh(){
-        if (!TextUtils.isEmpty(shellExecutor.getLastOutput()) | !shellExecutor.getLastOutput().contains("Network is down")) {
-            Log.d(TAG, "refresh: " + usingAirodump);
-            if (usingAirodump) {
-                Log.d(TAG, String.format("refresh: %s", "Airodump checked."));
-                KaliShellExecutor csvRawReader = new KaliShellExecutor(getApplicationContext());
+        if (isRefreshing) return;
+        isRefreshing = true;
 
-                // Menjalankan perintah untuk membaca file CSV jika ada
-                csvRawReader.runKaliRoot("cat " +
-                        AttackFunction.csvPathAirodump() + "/*.csv");
+        scanExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String lastOutput = shellExecutor.getLastOutput();
+                    if (!TextUtils.isEmpty(lastOutput) && !lastOutput.contains("Network is down")) {
+                        Log.d(TAG, "refresh: " + usingAirodump);
+                        if (usingAirodump) {
+                            Log.d(TAG, String.format("refresh: %s", "Airodump checked."));
+                            KaliShellExecutor csvRawReader = new KaliShellExecutor(getApplicationContext());
 
-                if (!TextUtils.isEmpty(removeFirstLine(csvRawReader.getLastOutput()))) {
-                    CSVManagerAP csvManagerAP = new CSVManagerAP();
-                    csvManagerAP.readSectionFromText(removeFirstLine(csvRawReader.getLastOutput()));
+                            // Menjalankan perintah untuk membaca file CSV di background thread
+                            csvRawReader.runKaliRoot("cat " + AttackFunction.csvPathAirodump() + "/*.csv");
+                            String csvOutput = removeFirstLine(csvRawReader.getLastOutput());
 
-                    ArrayList<HashMap<String, String>> tmpArray = new ArrayList<>();
-                    writeDataToFile(csvManagerAP.getData(), "/data/local/scanned.json");
-                    for (HashMap<String, String> row : csvManagerAP.getData()) {
-                        boolean isPassToAdd = !TextUtils.isEmpty(row.get("BSSID"));
-                        if (row == null) continue; // Pastikan row tidak null
+                            if (!TextUtils.isEmpty(csvOutput)) {
+                                CSVManagerAP csvManagerAP = new CSVManagerAP();
+                                csvManagerAP.readSectionFromText(csvOutput);
 
-                        HashMap<String, String> tmpData = new HashMap<>();
+                                ArrayList<HashMap<String, String>> tmpArray = new ArrayList<>();
+                                writeDataToFile(csvManagerAP.getData(), "/data/local/scanned.json");
+                                for (HashMap<String, String> row : csvManagerAP.getData()) {
+                                    if (row == null) continue;
+                                    boolean isPassToAdd = !TextUtils.isEmpty(row.get("BSSID"));
 
-                        // Cek null untuk setiap entri pada row sebelum mengakses
-                        String essid = row.get("ESSID") != null ? row.get("ESSID") : "Unknown";
-                        String bssid = row.get("BSSID") != null ? row.get("BSSID") : "Unknown";
-                        String power = row.get("Power") != null ? row.get("Power") + " dBm" : "N/A";
-                        String channelStr = row.get("channel");
+                                    HashMap<String, String> tmpData = new HashMap<>();
 
-                        // Konversi channel ke frekuensi, cek null dan format
-                        int frequency = 0;
-                        Log.d("TAG", "Channel: " + channelStr);
-                        if (channelStr != null) {
-                            try {
-                                int channel = Integer.parseInt(channelStr);
-                                frequency = InterfaceManager.parseFrequencyFromChannel(channel);
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace(); // Log jika format channel salah
+                                    String essid = row.get("ESSID") != null ? row.get("ESSID") : "Unknown";
+                                    String bssid = row.get("BSSID") != null ? row.get("BSSID") : "Unknown";
+                                    String power = row.get("Power") != null ? row.get("Power") + " dBm" : "N/A";
+                                    String channelStr = row.get("channel");
+
+                                    int frequency = 0;
+                                    if (channelStr != null) {
+                                        try {
+                                            int channel = Integer.parseInt(channelStr);
+                                            frequency = InterfaceManager.parseFrequencyFromChannel(channel);
+                                        } catch (NumberFormatException e) {
+                                            // Format parsing exception
+                                        }
+                                    }
+
+                                    tmpData.put("SSID", essid);
+                                    tmpData.put("BSSID", bssid);
+                                    tmpData.put("Signal", power);
+                                    tmpData.put("Frequency", frequency != -1 ? String.valueOf(frequency) : "0");
+
+                                    if (isPassToAdd) tmpArray.add(tmpData);
+                                }
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, tmpArray);
+                                        listView.setAdapter(adapter);
+                                    }
+                                });
                             }
+                        } else {
+                            ArrayList<HashMap<String, String>> list = parseWiFiScanOutput(lastOutput);
+                            Log.d("Scanner", "onCommandFinished: " + lastOutput);
+                            for (int i = list.size() - 1; i >= 0; i--) {
+                                if (TextUtils.isEmpty(list.get(i).get("SSID"))) {
+                                    list.remove(i);
+                                }
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, list);
+                                    listView.setAdapter(adapter);
+                                }
+                            });
                         }
-
-                        tmpData.put("SSID", essid);
-                        tmpData.put("BSSID", bssid);
-                        tmpData.put("Signal", power);
-                        tmpData.put("Frequency", frequency != -1 ? String.valueOf(frequency) : "0");
-
-                        if (isPassToAdd) tmpArray.add(tmpData);
                     }
-
-                    // Pastikan pembaruan UI dilakukan di thread utama
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, tmpArray);
-                            listView.setAdapter(adapter);
-                        }
-                    });
+                } finally {
+                    isRefreshing = false;
                 }
-            }else{
-                ArrayList<HashMap<String, String>> list = parseWiFiScanOutput(shellExecutor.getLastOutput());
-                Log.d("Scanner", "onCommandFinished: " + shellExecutor.getLastOutput());
-                for (int i = 0; i < list.size(); i++) {
-                    if (TextUtils.isEmpty(list.get(i).get("SSID"))){
-                        list.remove(i);
-                    }
-
-                }
-                // Pastikan pembaruan UI dilakukan di thread utama
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        WiFiListAdapter adapter = new WiFiListAdapter(ScannerActivity.this, list);
-                        listView.setAdapter(adapter);
-                    }
-                });
             }
-        }
+        });
     }
     private void startScan(){
         shellExecutor.startProcessAsRootAsync("iw " + wifiInterface + " scan");
@@ -309,46 +319,47 @@ public class ScannerActivity extends DxaActivity {
         return wifiList;
     }
     public void interfaceSelectorDialog(){
-        ArrayList<HashMap<String, String>> itemList = InterfaceManager.getListInterface(this);
+        scanExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<HashMap<String, String>> itemList = InterfaceManager.getListInterface(ScannerActivity.this);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (itemList != null && !itemList.isEmpty()) {
+                            ArrayList<String> ifList = new ArrayList<>();
+                            ArrayList<String> adapterList = new ArrayList<>();
 
-        if (itemList != null && !itemList.isEmpty()) {
-            ArrayList<String> ifList = new ArrayList<>();
-            ArrayList<String> adapterList = new ArrayList<>();
+                            for (HashMap<String, String> map : itemList) {
+                                String interfaceName = map.get("interface");
+                                String driverName = map.get("driver");
+                                boolean isMon = "true".equalsIgnoreCase(map.get("isMonitor"));
+                                ifList.add(interfaceName);
+                                adapterList.add(interfaceName + " : " + driverName + (isMon ? " [MONITOR]" : ""));
+                            }
 
-            for (HashMap<String, String> map : itemList) {
-                String interfaceName = map.get("interface");
-                String driverName = map.get("driver");
-                ifList.add(interfaceName);
-                adapterList.add(interfaceName + " : " + driverName);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ScannerActivity.this);
+                            builder.setTitle("Select Interface");
+                            builder.setCancelable(false);
+                            builder.setPositiveButton(R.string.refresh, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    interfaceSelectorDialog();
+                                }
+                            });
+
+                            String[] options = adapterList.toArray(new String[0]);
+
+                            builder.setItems(options, (dialog, which) -> {
+                                wifiInterface = ifList.get(which);
+                                start();
+                            });
+                            builder.show();
+                        }
+                    }
+                });
             }
-
-            // Membuat dialog pilihan
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Select Interface");
-            builder.setCancelable(false);
-            builder.setPositiveButton(R.string.refresh, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    interfaceSelectorDialog();
-                }
-            });
-
-            // Konversi daftar untuk AlertDialog
-            String[] options = adapterList.toArray(new String[0]);
-
-            builder.setItems(options, (dialog, which) -> {
-                // Ambil nama interface berdasarkan indeks pilihan
-                String selectedInterface = ifList.get(which);
-
-                // Menampilkan interface yang dipilih
-                wifiInterface = selectedInterface;
-                start();
-                // Lakukan sesuatu dengan nama interface
-                // Misalnya, simpan ke variabel global atau gunakan dalam logika aplikasi
-            });
-            builder.show();
-        }
-
+        });
     }
     private void start(){
         tick();
@@ -366,5 +377,14 @@ public class ScannerActivity extends DxaActivity {
                 startScan();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (tickLoop != null) {
+            tickLoop.stop();
+        }
+        scanExecutor.shutdown();
     }
 }

@@ -1,97 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="?android:colorBackground"
     tools:context=".ScannerActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include layout="@layout/title_airhack"/>
-        <LinearLayout
+
+        <!-- Top Header & Controls Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/interfaceView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:layout_weight="1.0"
-                android:text="@string/app_name"/>
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutline"
+            app:cardBackgroundColor="?attr/colorSurface">
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <include layout="@layout/title_airhack"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:text="@string/airodump_ng_mode"/>
-                <Switch
-                    android:id="@+id/use_airodump"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="8dp"/>
+                    android:gravity="center_vertical"
+                    android:paddingTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/interfaceView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:typeface="monospace"
+                        android:textColor="?attr/colorOnSurface"
+                        android:text="@string/app_name"/>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/use_airodump"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/airodump_ng_mode"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="12sp"/>
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-        <View
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Access Points List or Empty State -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"/> <!-- Margin for spacing -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="0dp"
+            android:layout_weight="1.0">
+
             <TextView
                 android:id="@+id/is_list_gone"
-                android:text="No accesspoint detected."
+                android:text="@string/no_ap_detected"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+
             <ListView
                 android:id="@+id/list_ap"
                 android:visibility="gone"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="90dp"
+                android:clipToPadding="false"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
-        </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
+
+    <!-- Scan Progress Bar -->
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="4dp"
         android:indeterminate="true"
-        android:layout_gravity="bottom"
+        android:visibility="invisible"
+        android:layout_gravity="top"
         style="?android:progressBarStyleHorizontal"/>
+
+    <!-- Action FABs -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:gravity="bottom|end"
         android:orientation="vertical">
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fix_inteface"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_marginEnd="16dp"
-            android:layout_alignParentEnd="true"
-            android:contentDescription="Mini FAB"
+            android:contentDescription="@string/mini_fab_desc"
+            app:backgroundTint="?attr/colorSurfaceVariant"
+            app:tint="?attr/colorOnSurfaceVariant"
             app:srcCompat="@drawable/baseline_auto_fix_normal_24"
-            app:fabCustomSize="42dp"/>
+            app:fabCustomSize="46dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scan_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            app:srcCompat="@android:drawable/ic_media_play"
-            android:id="@+id/scan_button"/>
+            android:contentDescription="@string/mini_fab_desc"
+            app:backgroundTint="?attr/colorPrimary"
+            app:tint="?attr/colorOnPrimary"
+            app:srcCompat="@android:drawable/ic_media_play"/>
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -42,6 +42,8 @@ import com.google.android.material.internal.TextScale;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends DxaActivity {
 
@@ -59,6 +61,8 @@ public class MainActivity extends DxaActivity {
     private boolean isAttackModeSelected = false;
     private TextView viewNowCommand, outputView;
     private ViewGroup content;
+    private boolean lastProcessRunningState = false;
+    private final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 
     private int parameterID = 2;
     private ArrayList<String> nowCommand;
@@ -91,8 +95,10 @@ public class MainActivity extends DxaActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Tampilkan item yang dipilih
-                String selectedItem = ifList.get(position);
-                wifiInterface = selectedItem;
+                if (ifList != null && position < ifList.size()) {
+                    String selectedItem = ifList.get(position);
+                    wifiInterface = selectedItem;
+                }
             }
 
             @Override
@@ -103,9 +109,7 @@ public class MainActivity extends DxaActivity {
         refIntf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int intf = linterface.getSelectedItemPosition();
                 refreshListInterface();
-                linterface.setSelection(intf);
             }
         });
     }
@@ -116,7 +120,7 @@ public class MainActivity extends DxaActivity {
     }
     private void bindView(){
         shell = new KaliShellExecutor(MainActivity.this);
-        tickLoop = new TickLoop();
+        tickLoop = new TickLoop(250);
         goScan = findViewById(R.id.next_scan_ap);
         outputView = findViewById(R.id.output_attack);
         fab = findViewById(R.id.fab);
@@ -156,16 +160,23 @@ public class MainActivity extends DxaActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onTick() {
-                if (shell.isProcessRunning()){
-                    fab.setImageResource(android.R.drawable.ic_media_pause);
-                }else{
-                    fab.setImageResource(android.R.drawable.ic_media_play);
+                boolean running = shell.isProcessRunning();
+                if (running != lastProcessRunningState) {
+                    lastProcessRunningState = running;
+                    if (running) {
+                        fab.setImageResource(android.R.drawable.ic_media_pause);
+                    } else {
+                        fab.setImageResource(android.R.drawable.ic_media_play);
+                    }
+                    View[] views = {fab};
+                    setEnabledAllView(content, views, !running);
                 }
-                View[] views = {fab};
-                setEnabledAllView(content, views, !shell.isProcessRunning());
                 fab.setEnabled(isAttackModeSelected);
-                nowCommand.set(1,wifiInterface);
-                viewNowCommand.setText((getNowCommand().isEmpty() ? "" : getNowCommand()));
+                if (nowCommand != null && nowCommand.size() > 1 && wifiInterface != null) {
+                    nowCommand.set(1, wifiInterface);
+                }
+                String currentCmd = getNowCommand();
+                viewNowCommand.setText((currentCmd.isEmpty() ? "" : currentCmd));
             }
 
         });
@@ -192,24 +203,46 @@ public class MainActivity extends DxaActivity {
     }
 
     private void refreshListInterface(){
-        runOnUiThread(new Runnable() {
+        refIntf.setEnabled(false);
+        backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 ArrayList<HashMap<String, String>> itemList = InterfaceManager.getListInterface(MainActivity.this);
-                if (itemList != null || !itemList.isEmpty()){
-                    ifList = new ArrayList<>();
-                    ArrayList<String> adapterList = new ArrayList<>();
-                    for (int i = 0; i < itemList.size(); i++) {
-                        ifList.add((String) itemList.get(i).get("interface"));
-                        adapterList.add(itemList.get(i).get("interface") + " : " + itemList.get(i).get("driver"));
-                    }
-                    // Membuat adapter untuk Spinner
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, adapterList);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refIntf.setEnabled(true);
+                        if (itemList != null && !itemList.isEmpty()){
+                            ifList = new ArrayList<>();
+                            ArrayList<String> adapterList = new ArrayList<>();
+                            int monitorIndex = -1;
 
-                    // Menambahkan adapter ke Spinner
-                    linterface.setAdapter(adapter);
-                }
+                            for (int i = 0; i < itemList.size(); i++) {
+                                HashMap<String, String> item = itemList.get(i);
+                                String iface = item.get("interface");
+                                String driver = item.get("driver");
+                                boolean isMon = "true".equalsIgnoreCase(item.get("isMonitor"));
+
+                                ifList.add(iface);
+                                String displayLabel = iface + " : " + driver + (isMon ? " [MONITOR]" : "");
+                                adapterList.add(displayLabel);
+
+                                if (isMon && monitorIndex == -1) {
+                                    monitorIndex = i;
+                                }
+                            }
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, adapterList);
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            linterface.setAdapter(adapter);
+
+                            if (monitorIndex != -1) {
+                                linterface.setSelection(monitorIndex);
+                                wifiInterface = ifList.get(monitorIndex);
+                                Toast.makeText(MainActivity.this, "Monitor interface detected: " + wifiInterface, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
             }
         });
     }
@@ -327,10 +360,6 @@ public class MainActivity extends DxaActivity {
         attackParameterView.addView(prompt);
     }
     private void addParamCheckBox(int paramId, String labelText, String paramCommand) {
-        // Membuat label untuk checkbox
-//        TextView label = new TextView(MainActivity.this);
-//        label.setText(labelText + " (%s)".replace("%s", paramCommand.replaceAll("-", "")));
-
         // Membuat checkbox
         CheckBox checkBox = new CheckBox(MainActivity.this);
         checkBox.setLayoutParams(new ViewGroup.LayoutParams(
@@ -346,7 +375,6 @@ public class MainActivity extends DxaActivity {
         });
 
         // Menambahkan label dan checkbox ke layout parameter
-//        attackParameterView.addView(label);
         attackParameterView.addView(checkBox);
     }
 
@@ -370,110 +398,37 @@ public class MainActivity extends DxaActivity {
     }
     private View.OnClickListener attackStart(){
         return new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 if (shell.isProcessRunning()){
                     shell.stopProcess();
-                }else{
-                    Log.d("Command", getNowCommand());
-                    startAttack();
+                }else {
+                    shell.runKaliRootAsync(getNowCommand());
                 }
             }
         };
     }
-    private void startAttack(){
-        if (InterfaceManager.isInterfaceExist(MainActivity.this, wifiInterface)){
-            if (InterfaceManager.checkMonitor(MainActivity.this, wifiInterface)){
-                shell.runKaliRootAsync(getNowCommand());
-            }else{
-                showDialogAlertMonitorMode(wifiInterface);
-            }
-        }else{
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Error") // Judul dialog
-                    .setMessage("Select another interface or replug in interface") // Pesan dialog
-                    .setPositiveButton(android.R.string.ok,null)
-                    .show(); // Tampilkan dialog
-        }
-    }
-    private void showDialogAlertMonitorMode(String intf){
-        new AlertDialog.Builder(MainActivity.this)
-                .setTitle("Warning") // Judul dialog
-                .setMessage("Interface \"" + wifiInterface + "\" is not in monitor mode. Do you want change interface to monitor mode?") // Pesan dialog
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        TerminalDialogFragment terminalDialog = TerminalDialogFragment.newInstance("airmon-ng start " + intf, MainActivity.this);
-                        terminalDialog.setCancelable(false);
-                        terminalDialog.setAutoClose(true);
-                        terminalDialog.setOnCloseClickedListener(new TerminalDialogFragment.OnCloseClickedListener() {
-                            @Override
-                            public void onClick(View view, int code) {
-                                boolean isMonitor = InterfaceManager.checkMonitor(getApplicationContext(), wifiInterface);
-                                Toast.makeText(MainActivity.this, isMonitor ?
-                                        "Success changed " +  wifiInterface + " to monitor!" : "Failed changed " +  wifiInterface + " to monitor!", Toast.LENGTH_SHORT).show();
-                                int intf = linterface.getSelectedItemPosition();
-                                refreshListInterface();
-                                linterface.setSelection(intf);
-                                if (isMonitor){
-                                    startAttack();
-                                }
-                            }
-                        });
-                        terminalDialog.show(fragmentManager, "TerminalDialogFragment");
-                    }
-                })
-                .setNeutralButton("Force Attack", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        shell.runKaliRootAsync(getNowCommand());
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Aksi jika tombol Cancel ditekan
-                        dialog.dismiss(); // Menutup dialog
-                    }
-                })
-                .show(); // Tampilkan dialog
-    }
-    private void addMessage(String msg) {
-        // append the new string
+    private void addMessage(String message){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                outputView.setText(msg);
+                outputView.setText(message);
             }
         });
-        // find the amount we need to scroll.  This works by
-        // asking the TextView's internal layout for the position
-        // of the final line and then subtracting the TextView's height
-//        final int scrollAmount = outputView.getLayout().getLineTop(outputView.getLineCount()) - outputView.getHeight();
-        // if there is no need to scroll, scrollAmount will be <=0
-//        if (scrollAmount > 0)
-//            outputView.scrollTo(0, scrollAmount);
-//        else
-//            outputView.scrollTo(0, 0);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        tickLoop.stop();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        tickLoop.stop();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        tickLoop.start();
+        refreshListInterface();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (tickLoop != null) {
+            tickLoop.stop();
+        }
+        backgroundExecutor.shutdown();
     }
 }
