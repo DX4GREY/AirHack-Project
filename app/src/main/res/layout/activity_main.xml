@@ -15,14 +15,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Top Header & Interface Picker Card -->
+        <!-- Top App Bar / Header Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
             app:strokeColor="?attr/colorOutline"
@@ -31,43 +31,49 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="16dp"
                 android:orientation="vertical">
 
                 <include layout="@layout/title_airhack"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/network_interface_label"
-                    android:textStyle="bold"
-                    android:textSize="11sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:letterSpacing="0.08"
-                    android:layout_marginBottom="8dp"/>
-
+                <!-- Interface Selector Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:layout_marginTop="4dp"
                     android:orientation="horizontal">
 
-                    <Spinner
+                    <TextView
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1.0"
-                        android:background="@drawable/bg_spinner_interface"
-                        android:paddingHorizontal="10dp"
-                        android:id="@+id/list_interface"/>
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/network_interface_label"
+                        android:textStyle="bold"
+                        android:textSize="11sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:letterSpacing="0.08"/>
 
                     <com.google.android.material.button.MaterialButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
-                        android:layout_marginStart="10dp"
-                        android:text="@string/string_refresh"
-                        app:cornerRadius="10dp"
-                        android:id="@+id/refresh_interface"/>
+                        android:id="@+id/refresh_interface"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:icon="@drawable/baseline_refresh"
+                        app:iconTint="?attr/colorOnSurfaceVariant"
+                        app:iconSize="20dp"
+                        android:contentDescription="@string/string_refresh"/>
                 </LinearLayout>
+
+                <Spinner
+                    android:id="@+id/list_interface"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_spinner_interface"
+                    android:paddingHorizontal="14dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -82,7 +88,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="90dp"
+                android:paddingBottom="100dp"
                 android:orientation="vertical">
 
                 <!-- Attack Modes Card -->
@@ -90,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp"
-                    app:cardCornerRadius="16dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="?attr/colorOutline"
@@ -99,31 +105,31 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
+                        android:padding="18dp"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="13sp"
+                            android:textSize="12sp"
                             android:textStyle="bold"
-                            android:letterSpacing="0.05"
-                            android:textColor="?attr/colorOnSurface"
+                            android:letterSpacing="0.08"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:text="@string/attack_mode_title"/>
 
                         <RadioGroup
+                            android:id="@+id/attack_modes"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingTop="10dp"
-                            android:id="@+id/attack_modes"/>
+                            android:paddingTop="10dp"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Attack Parameter Container -->
                 <LinearLayout
+                    android:id="@+id/param_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/param_layout"
                     android:visibility="gone"
                     android:orientation="vertical">
 
@@ -131,7 +137,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        app:cardCornerRadius="16dp"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="0dp"
                         app:strokeWidth="1dp"
                         app:strokeColor="?attr/colorOutline"
@@ -140,22 +146,22 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="16dp"
+                            android:padding="18dp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="13sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold"
-                                android:letterSpacing="0.05"
-                                android:textColor="?attr/colorOnSurface"
+                                android:letterSpacing="0.08"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:text="@string/attack_parameter_title"/>
 
                             <LinearLayout
+                                android:id="@+id/attack_parameter"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/attack_parameter"
                                 android:paddingTop="10dp"
                                 android:orientation="vertical"/>
                         </LinearLayout>
@@ -172,9 +178,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@android:color/transparent"
-        android:paddingHorizontal="16dp"
+        android:paddingHorizontal="18dp"
         android:paddingTop="4dp"
-        android:paddingBottom="10dp"
+        android:paddingBottom="12dp"
         android:orientation="vertical">
 
         <TextView
@@ -184,7 +190,7 @@
             android:textSize="12sp"
             android:typeface="monospace"
             android:textColor="?attr/colorOnSurface"
-            android:alpha="0.8"
+            android:alpha="0.85"
             android:singleLine="true"
             android:ellipsize="start"
             android:scrollHorizontally="true"/>
@@ -196,7 +202,7 @@
             android:textSize="11sp"
             android:typeface="monospace"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:alpha="0.7"
+            android:alpha="0.75"
             android:singleLine="true"
             android:ellipsize="end"
             android:scrollHorizontally="true"/>
@@ -214,24 +220,26 @@
             android:id="@+id/next_scan_ap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="18dp"
             android:contentDescription="@string/mini_fab_desc"
             app:backgroundTint="?attr/colorSurfaceVariant"
             app:tint="?attr/colorOnSurfaceVariant"
             app:srcCompat="@drawable/baseline_wifi"
-            app:fabCustomSize="46dp"/>
+            app:elevation="2dp"
+            app:fabCustomSize="48dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="62dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="64dp"
             android:contentDescription="@string/mini_fab_desc"
             app:backgroundTint="?attr/colorPrimary"
             app:tint="?attr/colorOnPrimary"
-            app:srcCompat="@android:drawable/ic_media_play"
-            android:id="@+id/fab"/>
+            app:elevation="4dp"
+            app:srcCompat="@android:drawable/ic_media_play"/>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

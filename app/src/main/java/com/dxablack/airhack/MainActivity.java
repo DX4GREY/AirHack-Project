@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -31,6 +30,7 @@ import com.dxablack.KaliShellExecutor;
 import com.dxablack.ShellExecutor;
 import com.dxablack.TickLoop;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
@@ -56,7 +56,7 @@ public class MainActivity extends DxaActivity {
     private String wifiInterface = "wlan0";
     private Spinner linterface;
     private ArrayList<String> ifList;
-    private Button refIntf;
+    private MaterialButton refIntf;
     private FloatingActionButton fab, goScan;
     private boolean isAttackModeSelected = false;
     private TextView viewNowCommand, outputView;
@@ -248,12 +248,13 @@ public class MainActivity extends DxaActivity {
     }
 
     private void addAttackModes() {
-        // Example array of options
         String[] options = AttackFunction.attackModes();
         for (String option : options) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setText(option.split(";")[2]);
             radioButton.setId(Integer.parseInt(option.split(";")[0]));
+            radioButton.setTextSize(14);
+            radioButton.setPadding(12, 10, 12, 10);
             attackSelectView.addView(radioButton);
         }
     }
@@ -264,7 +265,6 @@ public class MainActivity extends DxaActivity {
         nowCommand.add(wifiInterface);
         nowCommand.add(getAttackModeFromID(atkId));
 
-        // Example array of options
         parameterID = 3;
         attackParameterView.removeAllViews();
         String[] options = AttackFunction.attackParameter();
@@ -272,14 +272,12 @@ public class MainActivity extends DxaActivity {
             String[] splitted = option.split(";");
             int id = Integer.parseInt(splitted[0]);
             if (atkId == id) {
-                // Pastikan panjang array splitted cukup
                 if (splitted.length >= 5) {
                     String viewName = splitted[1];
                     String paramCommand = splitted[2];
                     String label = splitted[3];
                     String helpParam = splitted[4];
 
-                    // Cek apakah elemen ke-6 (example) ada
                     String example = (splitted.length >= 6) ? splitted[5] : "No example provided";
 
                     switch (viewName) {
@@ -302,47 +300,50 @@ public class MainActivity extends DxaActivity {
     }
 
     private String getInterfaceSuggestions() {
-        String tmp = "";  // Default interface
+        String tmp = "";
         ShellExecutor shellExecutor = new ShellExecutor(false);
 
         for (String iface : ifList) {
-            iface = iface.replaceAll("\n", "").replaceAll("\\s+", "");  // Hapus spasi dan karakter newline
+            iface = iface.replaceAll("\n", "").replaceAll("\\s+", "");
             String cmd = "iw " + iface + " info";
             Log.d("main", "getInterfaceSuggestions: " + cmd);
 
-            // Jalankan perintah di shell
             shellExecutor.startProcessAsRoot(cmd);
 
-            // Ambil output setelah proses selesai
             String output = shellExecutor.getLastOutput();
             Log.d("main", "Shell output: " + output);
 
-            // Cek kondisi: bukan p2p, mengandung angka 0, dan hanya phy 0
             if (iface.contains("0") && !iface.contains("p2p") && output.contains("phy 0")) {
-                tmp = iface;  // Ganti interface sementara dengan yang sesuai
+                tmp = iface;
                 Log.d("main", "getInterfaceSuggestions: Successfully add " + tmp);
-                break;  // Berhenti setelah menemukan interface phy 0 di index pertama
+                break;
             }
         }
 
-        return tmp.replaceAll("\\s+", "");  // Hapus spasi ekstra jika ada
+        return tmp.replaceAll("\\s+", "");
     }
 
     private void addParamEditText(int paramId, String labelText, String helpText, String paramCommand, String examples){
         TextView label = new TextView(MainActivity.this);
         label.setText(String.join(" - ", labelText + " (%s)".replace("%s", paramCommand.replaceAll("-", "")) , helpText));
+        label.setTextSize(12);
+        label.setTextColor(getColor(android.R.color.tab_indicator_text));
+        label.setPadding(4, 10, 4, 4);
 
         EditText prompt = new EditText(MainActivity.this);
-        prompt.setLayoutParams(new ViewGroup.LayoutParams(
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 4, 0, 10);
+        prompt.setLayoutParams(lp);
         prompt.setHint(examples);
         prompt.setTextSize(14);
+        prompt.setBackgroundResource(R.drawable.bg_param_input);
+        prompt.setPadding(16, 12, 16, 12);
         prompt.setSingleLine();
         prompt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -359,32 +360,34 @@ public class MainActivity extends DxaActivity {
         attackParameterView.addView(label);
         attackParameterView.addView(prompt);
     }
+
     private void addParamCheckBox(int paramId, String labelText, String paramCommand) {
-        // Membuat checkbox
         CheckBox checkBox = new CheckBox(MainActivity.this);
-        checkBox.setLayoutParams(new ViewGroup.LayoutParams(
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 4, 0, 8);
+        checkBox.setLayoutParams(lp);
         checkBox.setText(labelText + " (%s)".replace("%s", paramCommand.replaceAll("-", "")));
+        checkBox.setTextSize(14);
+        checkBox.setPadding(12, 8, 12, 8);
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 nowCommand.set(paramId, paramCommand);
             } else {
-                nowCommand.set(paramId, ""); // Hapus command jika tidak dicentang
+                nowCommand.set(paramId, "");
             }
         });
 
-        // Menambahkan label dan checkbox ke layout parameter
         attackParameterView.addView(checkBox);
     }
 
     private String getNowCommand(){
-        String tmp = "";
+        StringBuilder tmp = new StringBuilder();
         for (int i = 0; i < nowCommand.size(); i++) {
-            tmp += nowCommand.get(i) + " ";
+            tmp.append(nowCommand.get(i)).append(" ");
         }
-        tmp = tmp.replaceAll("\\s+", " ");
-        return tmp;
+        return tmp.toString().replaceAll("\\s+", " ");
     }
     private String getAttackModeFromID(int id){
         String tmp = "";

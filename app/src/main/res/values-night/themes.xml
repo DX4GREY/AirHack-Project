@@ -11,6 +11,11 @@
         <item name="android:colorBackground">@color/md_theme_dark_background</item>
         <item name="android:windowBackground">@color/md_theme_dark_background</item>
 
+        <!-- Status bar and navigation bar styling -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+
         <!-- Custom terminal styling -->
         <item name="terminalBackground">@color/terminal_dark_bg</item>
         <item name="terminalTextColor">@color/terminal_dark_text</item>
